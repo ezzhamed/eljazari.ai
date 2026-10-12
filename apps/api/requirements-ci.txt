@@ -46,6 +46,8 @@ trimesh==4.4.9
 # Utilities
 structlog==24.4.0
 tenacity==8.5.0
+# Simulator host lock (services/gazebo_service.py)
+filelock==3.32.3
 
 # Testing
 pytest==9.1.1

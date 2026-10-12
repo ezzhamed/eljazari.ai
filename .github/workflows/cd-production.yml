@@ -19,7 +19,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari-agents
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari.ai
   K8S_NAMESPACE: eljazari
 
 jobs:

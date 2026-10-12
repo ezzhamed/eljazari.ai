@@ -20,7 +20,7 @@ env:
   PYTHON_VERSION: "3.11"
   NODE_VERSION: "22"
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari-agents
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari.ai
 
 jobs:
   # ── 1. Python lint + type-check ──────────────────────────────────────────────

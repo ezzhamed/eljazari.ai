@@ -33,7 +33,7 @@ spec:
         runAsUser: 0
       containers:
         - name: simulation
-          image: ghcr.io/ezzhamed/eljazari-agents/sim:latest
+          image: ghcr.io/ezzhamed/eljazari.ai/sim:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 14550

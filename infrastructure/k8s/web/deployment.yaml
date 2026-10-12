@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: ghcr.io/ezzhamed/eljazari-agents/web:latest
+          image: ghcr.io/ezzhamed/eljazari.ai/web:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

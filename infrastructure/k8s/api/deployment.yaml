@@ -28,7 +28,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: api
-          image: ghcr.io/ezzhamed/eljazari-agents/api:latest
+          image: ghcr.io/ezzhamed/eljazari.ai/api:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

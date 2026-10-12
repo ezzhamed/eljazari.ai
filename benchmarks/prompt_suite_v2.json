@@ -1,0 +1,114 @@
+{
+  "suite": "prompt_suite_v2",
+  "derived_from": "prompt_suite_v1",
+  "fixed_on": "2026-09-29",
+  "description": "Published robustness prompts for the eljazari.ai pipeline: possible, impossible, unsupported-by-simulation and ambiguous requests in Arabic and English. Categories state what a correct outcome is; they are fixed before any run so results cannot be scored after the fact. v2 keeps every v1 prompt unchanged and re-categorises two: hexacopters and octocopters now have flight models (docs/FLIGHT_MODEL_SITL.md), so v1's 'unsupported' definition no longer held. Two prompts for topologies that are still refused keep that category measured.",
+  "categories": {
+    "supported": "A flat X quad-, hexa- or octocopter request that a documented catalog combination (a published motor, propeller and voltage test) can fly within the flight-model and safety limits. Correct outcome: the deterministic simulation acceptance gate passes, including its comparison of the flight with the approved code's mission.",
+    "impossible": "A request that no documented catalog combination or safety limit allows. Correct outcome: the run stops at an explicit gate (prompt, design, components, model, safety or simulation block) instead of flying a silently weakened aircraft or mission.",
+    "unsupported": "A physically plausible request for a topology this release does not simulate (tricopters, fixed wings). Correct outcome: the run stops at an explicit gate; flying a multirotor instead is a silent requirement change.",
+    "ambiguous": "A request with no stated mission or payload. There is no single correct outcome; the benchmark reports what the pipeline did and whether it ended at a deterministic decision."
+  },
+  "cases": [
+    {
+      "id": "en-hover-camera",
+      "language": "en",
+      "category": "supported",
+      "prompt": "A small quadcopter carrying a 150 g camera. Take off, hover at 10 m for 20 seconds, then land."
+    },
+    {
+      "id": "en-square-inspection",
+      "language": "en",
+      "category": "supported",
+      "prompt": "A quadcopter for roof inspection carrying a 300 g sensor. Fly a 20 m square at 15 m altitude, then return and land."
+    },
+    {
+      "id": "en-out-and-back",
+      "language": "en",
+      "category": "supported",
+      "prompt": "A lightweight quadcopter with a 100 g payload. Fly to a point 30 m north at 12 m altitude, then come back and land."
+    },
+    {
+      "id": "ar-hover-camera",
+      "language": "ar",
+      "category": "supported",
+      "prompt": "طائرة رباعية صغيرة تحمل كاميرا وزنها 200 غرام، تقلع وتحوم على ارتفاع 10 أمتار لمدة 20 ثانية ثم تهبط."
+    },
+    {
+      "id": "ar-square-farm",
+      "language": "ar",
+      "category": "supported",
+      "prompt": "طائرة رباعية لمراقبة مزرعة تحمل حساساً وزنه 250 غرام، تطير في مسار مربع طول ضلعه 25 متراً على ارتفاع 15 متراً ثم تعود وتهبط."
+    },
+    {
+      "id": "ar-out-and-back",
+      "language": "ar",
+      "category": "supported",
+      "prompt": "درون رباعي خفيف يحمل 120 غرام، يطير إلى نقطة تبعد 30 متراً شمالاً على ارتفاع 12 متراً ثم يعود ويهبط."
+    },
+    {
+      "id": "en-mass-paradox",
+      "language": "en",
+      "category": "impossible",
+      "prompt": "A quadcopter weighing 250 g in total that carries a 20 kg payload and hovers for 2 hours."
+    },
+    {
+      "id": "en-endurance",
+      "language": "en",
+      "category": "impossible",
+      "prompt": "A quadcopter carrying a 2 kg camera that hovers for 5 hours on a single battery."
+    },
+    {
+      "id": "ar-heavy-lift",
+      "language": "ar",
+      "category": "impossible",
+      "prompt": "طائرة رباعية تحمل 50 كيلوغراماً وتطير لمدة 4 ساعات دون توقف."
+    },
+    {
+      "id": "ar-altitude-limit",
+      "language": "ar",
+      "category": "impossible",
+      "prompt": "طائرة رباعية تحمل كاميرا 200 غرام وتصعد إلى ارتفاع 3000 متر ثم تهبط."
+    },
+    {
+      "id": "en-hexacopter-spray",
+      "language": "en",
+      "category": "impossible",
+      "prompt": "A hexacopter for crop spraying with a 3 kg tank. Fly a 20 m square at 5 m altitude and land.",
+      "change_from_v1": "v1: unsupported. No documented combination carries a 3 kg payload on a hexacopter: the catalog's only hexa frame (Tarot 680 Pro, 347 mm arms) keeps adjacent rotors 0.347 m apart, so propellers stay under 13.7 inches. Every combination the selector finds feasible for 3 kg is unsourced, which SITL refuses (selector, 2026-09-29: 64 feasible at 6S, 0 sourced; at 4S none reaches the 5 min endurance minimum)."
+    },
+    {
+      "id": "ar-octocopter-cinema",
+      "language": "ar",
+      "category": "supported",
+      "prompt": "طائرة ثمانية المحركات تحمل كاميرا سينمائية وزنها 2 كيلوغرام، تحوم على ارتفاع 10 أمتار ثم تهبط.",
+      "change_from_v1": "v1: unsupported. A documented octocopter carries 2 kg (selector, 2026-09-29: 37 sourced combinations at 6S, best MN4014 KV400 + P15x5, thrust-to-weight 2.80; 4 at 4S)."
+    },
+    {
+      "id": "en-fixed-wing-survey",
+      "language": "en",
+      "category": "unsupported",
+      "prompt": "A fixed-wing survey plane carrying a 200 g camera. Fly a 100 m square at 30 m altitude and land.",
+      "change_from_v1": "new in v2: fixed wings have no flight model"
+    },
+    {
+      "id": "ar-tricopter-hover",
+      "language": "ar",
+      "category": "unsupported",
+      "prompt": "طائرة ثلاثية المحركات تحمل كاميرا وزنها 150 غرام، تحوم على ارتفاع 8 أمتار لمدة 15 ثانية ثم تهبط.",
+      "change_from_v1": "new in v2: tricopters need a tilting rotor and are refused"
+    },
+    {
+      "id": "en-make-a-drone",
+      "language": "en",
+      "category": "ambiguous",
+      "prompt": "Make me a drone."
+    },
+    {
+      "id": "ar-good-drone",
+      "language": "ar",
+      "category": "ambiguous",
+      "prompt": "أريد طائرة جيدة."
+    }
+  ]
+}

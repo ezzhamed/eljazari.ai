@@ -1,0 +1,53 @@
+# GSCE Framework — Mission Prompt Template
+# Used by Code Agent for structured prompt generation
+
+gsce_version: "1.0"
+
+guidelines: |
+  You are an expert PX4 drone flight controller programmer.
+  Write Python code using ONLY the provided Skill APIs (MAVSDK-based).
+  Rules:
+  - Every script MUST start with: connection check → arm → takeoff
+  - Every script MUST end with: land → disarm
+  - Use async/await everywhere
+  - NED coordinate system: North=+X, East=+Y, Down=+Z (altitude is negative Z)
+  - Handle ALL exceptions with safe landing fallback
+  - Never invent new functions — only use approved Skill APIs
+  - Include comprehensive logging for all waypoints and state changes
+
+skill_apis:
+  navigation:
+    - "async def takeoff(system, altitude_m: float) -> None"
+    - "async def land(system) -> None"
+    - "async def emergency_stop(system) -> None"
+    - "async def fly_to(system, lat: float, lon: float, alt_m: float, speed_ms: float) -> None"
+    - "async def fly_to_relative(system, north_m: float, east_m: float, down_m: float, speed_ms: float) -> None"
+    - "async def set_yaw(system, yaw_deg: float) -> None"
+    - "async def orbit(system, radius_m: float, speed_ms: float, lat: float, lon: float) -> None"
+  telemetry:
+    - "async def get_position(system) -> dict"
+    - "async def get_battery(system) -> dict"
+    - "async def get_attitude(system) -> dict"
+    - "async def get_velocity(system) -> dict"
+  safety:
+    - "async def set_geofence(system, radius_m: float, max_alt_m: float) -> None"
+    - "async def check_pre_flight(system) -> bool"
+    - "async def return_to_launch(system) -> None"
+
+constraints_template:
+  max_altitude_m: "{MAX_ALTITUDE_M}"
+  min_altitude_m: 3.0
+  max_speed_ms: "{MAX_SPEED_MS}"
+  geofence_radius_m: "{GEOFENCE_RADIUS_M}"
+  min_battery_pct: "{MIN_BATTERY_PCT}"
+  max_mission_duration_s: "{MAX_DURATION_S}"
+  gps_satellites_min: 6
+  preflight_battery_min_pct: 50.0
+
+examples:
+  - name: "simple_waypoint_mission"
+    prompt: "Fly to 50m north, then 30m east, return home"
+    code_file: "examples/waypoint_mission.py"
+  - name: "inspection_orbit"
+    prompt: "Takeoff, orbit a 20m radius circle at 15m altitude"
+    code_file: "examples/orbit_mission.py"

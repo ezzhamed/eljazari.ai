@@ -1,0 +1,30 @@
+{
+  "name": "eljazari",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=22.13.0",
+    "npm": ">=10.5.1"
+  },
+  "packageManager": "npm@10.2.4",
+  "overrides": {
+    "next": {
+      "postcss": "8.5.28"
+    }
+  }
+}

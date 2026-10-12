@@ -1,0 +1,82 @@
+name: SITL — Fly the generated aircraft
+
+# Real PX4/Gazebo flights need a machine with PX4 built, Gazebo Harmonic and
+# unprivileged user namespaces; GitHub-hosted runners have none of that. Register
+# such a machine (for example the WSL setup in docs/WSL_API_SETUP.md) as a
+# self-hosted runner with the labels below. A green image build in ci.yml is not
+# a flight test; release.yml requires this workflow for the release commit.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  # One simulator per host: never overlap flights on the runner.
+  group: sitl-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  sitl:
+    name: Generated Quad-X in PX4 SITL
+    runs-on: [self-hosted, linux, px4-sitl]
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/api
+        # Explicit bash adds -o pipefail, so `| tee` cannot hide a failed check.
+        shell: bash
+    env:
+      ELJAZARI_FORCE_SITL: native
+      ELJAZARI_SITL_RUNTIME: native
+      ELJAZARI_REQUIRE_REAL_SITL: "true"
+      CHECKPOINT_BACKEND: postgres
+      REPORT_DIR: ${{ github.workspace }}/sitl-report
+    steps:
+      - uses: actions/checkout@v4
+
+      # Repository variables override the defaults of docs/WSL_API_SETUP.md;
+      # resolved here because `~` is not expanded inside workflow `env`.
+      - name: Resolve runner paths
+        env:
+          SITL_PYTHON: ${{ vars.DRONEPROMPT_SITL_PYTHON }}
+          PX4_DIR: ${{ vars.PX4_DIR }}
+        run: |
+          px4="${PX4_DIR:-$HOME/PX4-Autopilot}"
+          {
+            echo "PYTHON=${SITL_PYTHON:-$HOME/droneprompt-api-venv/bin/python}"
+            echo "ELJAZARI_NATIVE_PX4_DIR=$px4"
+            echo "ELJAZARI_NATIVE_WORLDS_PATH=$px4/Tools/simulation/gz/worlds"
+          } >> "$GITHUB_ENV"
+
+      - name: Import optional manufacturer data locally
+        run: '"$PYTHON" -m scripts.bootstrap_components'
+
+      - name: Environment check
+        run: '"$PYTHON" scripts/doctor.py'
+
+      - name: Mission sandbox containment (required)
+        env:
+          ELJAZARI_REQUIRE_SANDBOX_TEST: "1"
+        run: '"$PYTHON" -m pytest tests/test_mission_sandbox.py -q -p no:cacheprovider'
+
+      - name: Run ownership and cross-process events (PostgreSQL + Redis)
+        run: '"$PYTHON" scripts/check_multiworker.py | tee "$REPORT_DIR-multiworker.json"'
+
+      - name: Fly the generated aircraft (two payloads)
+        run: >-
+          "$PYTHON" scripts/check_generated_model_sitl.py
+          --payload-g 125 --payload-g 400 --out "$REPORT_DIR"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitl-report-${{ github.sha }}
+          path: |
+            ${{ github.workspace }}/sitl-report
+            ${{ github.workspace }}/sitl-report-multiworker.json
+          if-no-files-found: warn

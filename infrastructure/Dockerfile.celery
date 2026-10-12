@@ -1,0 +1,43 @@
+# Celery worker — same deps as API, different CMD
+FROM python:3.11-slim AS deps
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY apps/api/requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+
+FROM python:3.11-slim AS runtime
+
+LABEL org.opencontainers.image.description="eljazari.ai Celery simulation worker"
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/* \
+    && addgroup --system --gid 1001 appgroup \
+    && adduser  --system --uid 1001 --ingroup appgroup appuser
+
+COPY --from=deps /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=deps /usr/local/bin /usr/local/bin
+
+COPY apps/api/ .
+COPY data/ /app/data/
+
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+  CMD celery -A celery_app inspect ping || exit 1
+
+CMD ["celery", "-A", "celery_app", "worker", \
+     "--loglevel=info", \
+     "-Q", "simulation,default", \
+     "--concurrency=2", \
+     "--max-tasks-per-child=50"]

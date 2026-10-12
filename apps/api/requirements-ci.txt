@@ -1,0 +1,56 @@
+# CI-only requirements - excludes heavy ML packages (torch, mavsdk)
+# These are mocked in tests
+
+# Core
+fastapi==0.139.0
+starlette==1.3.1
+uvicorn[standard]==0.30.0
+python-multipart==0.0.31
+python-dotenv==1.2.2
+pydantic==2.13.4
+pydantic-settings==2.14.2
+
+# Database
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.31.0
+alembic==1.13.2
+
+# Cache & Queue
+redis==5.0.8
+celery==5.4.0
+
+# LangGraph + LangChain
+langgraph==1.2.7
+langchain==1.3.11
+langchain-community==0.4.2
+langchain-ollama==1.1.0
+langsmith==0.9.7
+
+# HTTP & WebSocket
+httpx==0.27.0
+aiofiles==24.1.0
+websockets==15.0.1
+python-socketio[asyncio_client]==5.16.3
+
+# Auth & Security
+PyJWT[crypto]==2.15.1
+passlib[bcrypt]==1.7.4
+
+# Rate Limiting
+slowapi==0.1.9
+
+# URDF/SDF
+lxml==6.1.1
+trimesh==4.4.9
+
+# Utilities
+structlog==24.4.0
+tenacity==8.5.0
+
+# Testing
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
+
+# Embedded vector retrieval (no vector database server)
+numpy==2.4.2

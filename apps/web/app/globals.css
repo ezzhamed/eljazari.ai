@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Neutral charcoal with a warm-sand accent (the eljazari portrait).
+       Three surface levels: page, panel (--surface), card (--card), and a
+       raised level for popovers and active items. */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
+    --surface: 0 0% 5.5%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 95%;
+    --surface-raised: 0 0% 10%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 36 34% 62%;
+    --primary-foreground: 30 30% 8%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 58%;
+    --accent: 0 0% 13%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 0 62% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 152 38% 52%;
+    --success-foreground: 152 40% 8%;
+    --warning: 38 80% 60%;
+    --warning-foreground: 38 60% 8%;
+    --info: 212 55% 64%;
+    --info-foreground: 212 50% 8%;
+    --border: 0 0% 14%;
+    --input: 0 0% 16%;
+    --ring: 36 34% 62%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { color-scheme: dark; }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Arabic runs (prompts, agent messages) pick up Cairo automatically. */
+  :lang(ar), [dir='rtl'] { font-family: var(--font-cairo), var(--font-inter), sans-serif; }
+}
+
+@layer components {
+  /* Small uppercase label above a group of controls or values. */
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  }
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 100% / 0.08);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background-color: hsl(0 0% 100% / 0.16); }
+
+::selection {
+  background: hsl(36 34% 62% / 0.28);
+  color: hsl(0 0% 98%);
+}
+
+/* Faint grid behind the landing composer. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, hsl(0 0% 100% / 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(0 0% 100% / 0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Warm glow at the top of the landing page only. */
+.bg-hero-glow {
+  background-image: radial-gradient(
+    1100px 560px at 50% -8%,
+    hsl(36 30% 22% / 0.14),
+    transparent 62%
+  );
+}

@@ -1,0 +1,133 @@
+# Gazebo/PX4 SITL simulation pod — GPU-accelerated
+# One pod per active simulation session (spawned by Celery worker)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation
+  namespace: droneprompt
+  labels:
+    app: simulation
+    app.kubernetes.io/part-of: droneprompt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulation
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: simulation
+      annotations:
+        prometheus.io/scrape: "false"
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-accelerator: "nvidia-t4"
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      # Security context for Gazebo GUI / display
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: simulation
+          image: ghcr.io/ezzhamed/eljazari-agents/sim:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14550
+              name: mavlink-udp
+              protocol: UDP
+            - containerPort: 14556
+              name: mavlink-tcp
+              protocol: TCP
+            - containerPort: 11345
+              name: gazebo
+          env:
+            - name: DISPLAY
+              value: ":99"
+            - name: ROS_DOMAIN_ID
+              value: "42"
+          envFrom:
+            - configMapRef:
+                name: droneprompt-config
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "4Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "6000m"
+              memory: "12Gi"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: simulation-worlds
+              mountPath: /simulation/worlds
+      volumes:
+        - name: simulation-worlds
+          persistentVolumeClaim:
+            claimName: simulation-pvc
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: simulation-hpa
+  namespace: droneprompt
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: simulation
+  minReplicas: 0   # scale to zero when idle
+  maxReplicas: 5   # max concurrent simulation pods
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 600   # keep alive 10 min after sim ends
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simulation-service
+  namespace: droneprompt
+  labels:
+    app: simulation
+spec:
+  selector:
+    app: simulation
+  ports:
+    - protocol: UDP
+      port: 14550
+      targetPort: 14550
+      name: mavlink-udp
+    - protocol: TCP
+      port: 14556
+      targetPort: 14556
+      name: mavlink-tcp
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: simulation-pvc
+  namespace: droneprompt
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ssd
+  resources:
+    requests:
+      storage: 20Gi

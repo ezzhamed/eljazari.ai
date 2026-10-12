@@ -1,0 +1,271 @@
+{
+  "suite": "prompt_suite_v1",
+  "runs": 42,
+  "categories": {
+    "ambiguous": {
+      "runs": 6,
+      "scored_runs": 0,
+      "correct": null,
+      "correct_rate": null,
+      "correct_rate_wilson95": null,
+      "decided": 6,
+      "outcomes": {
+        "accepted": 3,
+        "rejected_model": 3
+      },
+      "wall_time_s": {
+        "p50": 187.1,
+        "p95": 500.55,
+        "max": 500.55
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 0,
+      "code_fallback_runs": 0
+    },
+    "impossible": {
+      "runs": 12,
+      "scored_runs": 12,
+      "correct": 8,
+      "correct_rate": 0.6666666666666666,
+      "correct_rate_wilson95": [
+        0.3906220869404939,
+        0.86187990987514
+      ],
+      "decided": 12,
+      "outcomes": {
+        "accepted": 4,
+        "rejected_components": 6,
+        "rejected_model": 2
+      },
+      "wall_time_s": {
+        "p50": 120.35,
+        "p95": 723.79,
+        "max": 723.79
+      },
+      "retries": {
+        "total": 7,
+        "max": 3,
+        "runs_with_retry": 3
+      },
+      "design_not_from_llm_runs": 6,
+      "code_fallback_runs": 1
+    },
+    "supported": {
+      "runs": 18,
+      "scored_runs": 18,
+      "correct": 17,
+      "correct_rate": 0.9444444444444444,
+      "correct_rate_wilson95": [
+        0.7424269900391908,
+        0.990124809131223
+      ],
+      "decided": 18,
+      "outcomes": {
+        "accepted": 17,
+        "blocked_simulation": 1
+      },
+      "wall_time_s": {
+        "p50": 404.25,
+        "p95": 475.64,
+        "max": 475.64
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 0,
+      "code_fallback_runs": 0
+    },
+    "unsupported": {
+      "runs": 6,
+      "scored_runs": 6,
+      "correct": 5,
+      "correct_rate": 0.8333333333333334,
+      "correct_rate_wilson95": [
+        0.4364971749742326,
+        0.969946630588185
+      ],
+      "decided": 6,
+      "outcomes": {
+        "accepted": 1,
+        "rejected_model": 5
+      },
+      "wall_time_s": {
+        "p50": 146.39,
+        "p95": 373.0,
+        "max": 373.0
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 1,
+      "code_fallback_runs": 1
+    }
+  },
+  "languages": {
+    "ar": {
+      "scored_runs": 18,
+      "correct": 12,
+      "correct_rate": 0.6666666666666666
+    },
+    "en": {
+      "scored_runs": 18,
+      "correct": 18,
+      "correct_rate": 1.0
+    }
+  },
+  "cases": {
+    "ar-altitude-limit": {
+      "category": "impossible",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 0
+    },
+    "ar-good-drone": {
+      "category": "ambiguous",
+      "language": "ar",
+      "outcomes": [
+        "rejected_model",
+        "accepted",
+        "accepted"
+      ],
+      "correct": null
+    },
+    "ar-heavy-lift": {
+      "category": "impossible",
+      "language": "ar",
+      "outcomes": [
+        "rejected_model",
+        "rejected_model",
+        "accepted"
+      ],
+      "correct": 2
+    },
+    "ar-hover-camera": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 3
+    },
+    "ar-octocopter-cinema": {
+      "category": "unsupported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "rejected_model",
+        "rejected_model"
+      ],
+      "correct": 2
+    },
+    "ar-out-and-back": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "blocked_simulation",
+        "accepted"
+      ],
+      "correct": 2
+    },
+    "ar-square-farm": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 3
+    },
+    "en-endurance": {
+      "category": "impossible",
+      "language": "en",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "en-hexacopter-spray": {
+      "category": "unsupported",
+      "language": "en",
+      "outcomes": [
+        "rejected_model",
+        "rejected_model",
+        "rejected_model"
+      ],
+      "correct": 3
+    },
+    "en-hover-camera": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 3
+    },
+    "en-make-a-drone": {
+      "category": "ambiguous",
+      "language": "en",
+      "outcomes": [
+        "rejected_model",
+        "accepted",
+        "rejected_model"
+      ],
+      "correct": null
+    },
+    "en-mass-paradox": {
+      "category": "impossible",
+      "language": "en",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "en-out-and-back": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 3
+    },
+    "en-square-inspection": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "correct": 3
+    }
+  },
+  "method": {
+    "percentiles": "nearest-rank over every run in the category, including failures",
+    "interval": "Wilson score, 95%",
+    "retries": "extra code generations + extra simulation attempts in one run"
+  }
+}

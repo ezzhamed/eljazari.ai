@@ -1,0 +1,75 @@
+{
+  "image": "eljazari-sim:14529d6",
+  "checked_at": "2026-09-25T05:44:39+0300",
+  "passed": true,
+  "checks": [
+    {
+      "check": "image present",
+      "passed": true,
+      "image": "eljazari-sim:14529d6",
+      "id_size": "sha256:c95cf8b9d6b069b179077676e40eabfaab70d4e90740e8a12ff5ce607033363f 1617241700"
+    },
+    {
+      "check": "container starts",
+      "passed": true,
+      "stderr": ""
+    },
+    {
+      "check": "Gazebo up and PX4 startup script completes",
+      "passed": true,
+      "seconds": 9.4
+    },
+    {
+      "check": "entrypoint patched one onboard link for MAVSDK",
+      "passed": true,
+      "offboard_link": "mavlink start -x -u $udp_offboard_port_local -r 4000000 -f -m onboard -o $udp_offboard_port_remote",
+      "custom_links": 1
+    },
+    {
+      "check": "image healthcheck command passes",
+      "passed": true
+    },
+    {
+      "check": "PX4 binary is built from the pinned commit",
+      "passed": true,
+      "expected": "14529d6af3adad05b938fd6bc87cb92c3920147b"
+    },
+    {
+      "check": "x500 takes off, hovers and lands under MAVSDK in the container",
+      "passed": true,
+      "result": {
+        "samples": 2000,
+        "hover_samples": 750,
+        "max_alt_m": 5.0234375,
+        "hover_alt_rmse_m": 0.014523880946144185,
+        "hover_horizontal_max_drift_m": 0.05409940668451135,
+        "hover_abs_tilt_max_deg": 0.3731376528739929,
+        "landed": true,
+        "final_alt_m": 0.01019287109375
+      },
+      "stderr": null
+    },
+    {
+      "check": "killing PX4 ends the container",
+      "passed": true,
+      "exit_code": "1",
+      "seconds": 0.9
+    },
+    {
+      "check": "remote-target container starts",
+      "passed": true,
+      "stderr": ""
+    },
+    {
+      "check": "hostname target resolved to the IPv4 literal PX4 requires",
+      "passed": true,
+      "offboard_link": "mavlink start -t 192.168.65.254 -x -u $udp_offboard_port_local -r 4000000 -f -m onboard -o $udp_offboard_port_remote",
+      "px4_ready_s": 7.1
+    },
+    {
+      "check": "GazeboService (docker mode) detects the container and PX4's heartbeat",
+      "passed": true,
+      "detail": "docker: Docker SITL container detected: eljazari-sim-check-3120cb"
+    }
+  ]
+}

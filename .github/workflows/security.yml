@@ -1,0 +1,62 @@
+name: Security — Secrets · Dependencies · SBOM
+
+on:
+  push:
+    branches: [main, develop, "fix/**", "feat/**"]
+  pull_request:
+    branches: [main, develop, "fix/**", "feat/**"]
+  schedule:
+    - cron: "17 3 * * 1"   # weekly, catches newly published advisories
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Blocking: a committed credential must never merge. Scans the whole history,
+  # not just the tip — a secret removed in a later commit is still published.
+  secrets:
+    name: Secret scan (full history)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        run: >-
+          docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.24.3
+          git /repo --redact --no-banner --exit-code 1
+
+  # Dependency findings block publication.
+  python-audit:
+    name: Python dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pip-audit==2.9.0
+      - run: pip-audit -r apps/api/requirements.txt --desc
+
+  npm-audit:
+    name: npm dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --legacy-peer-deps --ignore-scripts
+      - run: npm audit --omit=dev --audit-level=high
+
+  sbom:
+    name: SBOM (SPDX)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          artifact-name: sbom-${{ github.sha }}.spdx.json

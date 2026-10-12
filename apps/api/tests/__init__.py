@@ -1,0 +1,1 @@
+"""eljazari.ai API tests."""

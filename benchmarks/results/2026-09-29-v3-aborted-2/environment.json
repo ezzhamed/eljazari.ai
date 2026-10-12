@@ -1,0 +1,60 @@
+{
+  "suite": "prompt_suite_v2",
+  "suite_sha256": "b7d14ef97c86b4baaec2e56a7483e517fc432340031551bf3c7e31ed3daffaa6",
+  "captured_at": "2026-09-29T00:15:44.013034+00:00",
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "logical_cpus": 8,
+    "memory_gb": 16.9,
+    "python": "3.13.12"
+  },
+  "git": {
+    "head": "d1f999618e616f18947a290f1f45f049f8fc52da",
+    "branch": "feat/sourced-dynamics-multirotor",
+    "tracked_diff_sha256": null,
+    "changed_paths": 0,
+    "untracked_paths": 0
+  },
+  "llm": {
+    "design_model": "gemma3:4b",
+    "code_model": "qwen2.5-coder:7b",
+    "eval_model": "llama3.2:latest",
+    "ollama": {
+      "base_url": "http://127.0.0.1:11434",
+      "version": "0.34.4",
+      "models": {
+        "gemma3:4b": {
+          "digest": "a2af6cc3eb7fa8be8504abaf9b04e88f17a119ec3f04a3addf55f92841195f5a",
+          "size": 3338801804,
+          "quantization": "Q4_K_M"
+        },
+        "llama3.2:latest": {
+          "digest": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72",
+          "size": 2019393189,
+          "quantization": "Q4_K_M"
+        },
+        "qwen2.5-coder:7b": {
+          "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "size": 4683087561,
+          "quantization": "Q4_K_M"
+        }
+      }
+    }
+  },
+  "simulator": {
+    "runtime": "wsl",
+    "require_real": true,
+    "px4_describe": "v1.17.0-alpha1-1535-g14529d6af3",
+    "px4_commit": "14529d6af3adad05b938fd6bc87cb92c3920147b",
+    "gazebo_sim": "8.11.0",
+    "mission_mavsdk": "3.15.3",
+    "wsl_kernel": "5.15.167.4-microsoft-standard-WSL2"
+  },
+  "pipeline": {
+    "checkpoints": "memory (benchmark harness; the API uses PostgreSQL)",
+    "max_simulation_iterations": 5,
+    "approvals": "automatic: Orchestrator.approve for design and code"
+  }
+}

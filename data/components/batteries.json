@@ -1,0 +1,140 @@
+[
+  {
+    "part_number": "tattu_rline_1300_4s_95c",
+    "manufacturer": "Tattu",
+    "model_name": "R-Line 1300mAh 4S 95C",
+    "chemistry": "LiPo",
+    "cells_s": 4,
+    "capacity_mah": 1300,
+    "weight_g": 161.0,
+    "max_continuous_c": 95.0,
+    "max_burst_c": 190.0,
+    "internal_resistance_mohm_per_cell": 2.8,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  80, "voltage_per_cell_v": 3.95},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.78},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.62},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.45}
+    ],
+    "price_usd": 24.99,
+    "url": "https://www.genstattu.com/tattu-rline-1300mah-4s-95c.html"
+  },
+  {
+    "part_number": "tattu_1500_4s_75c",
+    "manufacturer": "Tattu",
+    "model_name": "1500mAh 4S 75C",
+    "chemistry": "LiPo",
+    "cells_s": 4,
+    "capacity_mah": 1500,
+    "weight_g": 188.0,
+    "max_continuous_c": 75.0,
+    "max_burst_c": 150.0,
+    "internal_resistance_mohm_per_cell": 3.2,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  80, "voltage_per_cell_v": 3.92},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.76},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.60},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.45}
+    ],
+    "price_usd": 22.99
+  },
+  {
+    "part_number": "cnhl_blackseries_1500_6s_100c",
+    "manufacturer": "CNHL",
+    "model_name": "Black Series 1500mAh 6S 100C",
+    "chemistry": "LiPo",
+    "cells_s": 6,
+    "capacity_mah": 1500,
+    "weight_g": 268.0,
+    "max_continuous_c": 100.0,
+    "max_burst_c": 200.0,
+    "internal_resistance_mohm_per_cell": 2.5,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  80, "voltage_per_cell_v": 3.95},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.80},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.65},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.45}
+    ],
+    "price_usd": 38.99
+  },
+  {
+    "part_number": "tattu_plus_6000_4s_25c",
+    "manufacturer": "Tattu",
+    "model_name": "Plus 6000mAh 4S 25C (long flight)",
+    "chemistry": "LiPo",
+    "cells_s": 4,
+    "capacity_mah": 6000,
+    "weight_g": 580.0,
+    "max_continuous_c": 25.0,
+    "max_burst_c": 50.0,
+    "internal_resistance_mohm_per_cell": 3.8,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  80, "voltage_per_cell_v": 3.88},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.72},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.55},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.40}
+    ],
+    "price_usd": 79.99
+  },
+  {
+    "part_number": "tattu_plus_10000_6s_25c",
+    "manufacturer": "Tattu",
+    "model_name": "Plus 10000mAh 6S 25C (industrial)",
+    "chemistry": "LiPo",
+    "cells_s": 6,
+    "capacity_mah": 10000,
+    "weight_g": 1180.0,
+    "max_continuous_c": 25.0,
+    "max_burst_c": 50.0,
+    "internal_resistance_mohm_per_cell": 3.6,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  80, "voltage_per_cell_v": 3.88},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.72},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.55},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.40}
+    ],
+    "price_usd": 169.99
+  },
+  {
+    "part_number": "tattu_300_3s_45c",
+    "manufacturer": "Tattu",
+    "model_name": "300mAh 3S 45C (micro)",
+    "chemistry": "LiPo",
+    "cells_s": 3,
+    "capacity_mah": 300,
+    "weight_g": 26.0,
+    "max_continuous_c": 45.0,
+    "max_burst_c": 90.0,
+    "internal_resistance_mohm_per_cell": 8.0,
+    "voltage_nominal_per_cell_v": 3.7,
+    "voltage_full_per_cell_v": 4.2,
+    "voltage_empty_per_cell_v": 3.5,
+    "discharge_curve": [
+      {"state_of_charge_pct": 100, "voltage_per_cell_v": 4.20},
+      {"state_of_charge_pct":  50, "voltage_per_cell_v": 3.78},
+      {"state_of_charge_pct":  20, "voltage_per_cell_v": 3.62},
+      {"state_of_charge_pct":   5, "voltage_per_cell_v": 3.45}
+    ],
+    "price_usd": 9.99
+  }
+]

@@ -1,0 +1,16 @@
+---
+# Shared storage for API + Celery
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-pvc
+  namespace: droneprompt
+  labels:
+    app.kubernetes.io/part-of: droneprompt
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ssd
+  resources:
+    requests:
+      storage: 50Gi

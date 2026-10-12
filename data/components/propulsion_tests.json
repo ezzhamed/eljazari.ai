@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "tests": [],
+  "excluded": [],
+  "note": "Manufacturer propulsion data is not distributed. Run python -m scripts.bootstrap_components to import it locally."
+}

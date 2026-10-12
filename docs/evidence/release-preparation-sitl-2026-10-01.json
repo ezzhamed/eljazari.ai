@@ -1,0 +1,272 @@
+{
+  "date": "2026-10-01",
+  "scope": "Local generated-aircraft SITL checks; no hardware validation and no GitHub release-commit certification",
+  "flights": [
+    {
+      "topology": "quadcopter",
+      "motor_count": 4,
+      "propulsion_source": {
+        "curve_sha256": "26401174e23cd3eaf9237839012078a1d27e81231f528608730e96bb466da91d",
+        "reference": "T-MOTOR store page https://store.tmotor.com/product/mn3110-motor-navigator-type.html, Specifications > Test Data, rows MN3110 KV700 / 14.8 V / T-MOTOR 12*4CF; extract at local catalog evidence/tmotor_mn3110.json",
+        "source_sha256": "6cc91c7ee0f4f5c70dceb891460d0ca2b21da39d92681fb2bcede2df88745e5d"
+      },
+      "payload_g": 125.0,
+      "resolved_spec_sha256": "efdb4bdc457a94b654e9bd6509e70c794a9480e2bd66d5c7fa122e2d8c3db37e",
+      "bundle_sha256": "6e1b7fe09d0a7e186bc6184f8a3a3f77dbb02149bb962a0904945f47b6cb5825",
+      "expected_total_mass_kg": 1.4615,
+      "hover_thrust_fraction": 0.2819,
+      "px4_mpc_thr_hover": 0.4481,
+      "rate_gain_scale": {
+        "pitch": 0.7887,
+        "roll": 0.4772,
+        "yaw": 0.7546
+      },
+      "attestation": {
+        "status": "matched",
+        "validation_scope": "sitl_catalog_estimate",
+        "model_instance": "quadfm_efdb4bdc457a94b6_0",
+        "model_name": "quadfm_efdb4bdc457a94b6",
+        "resolved_spec_sha256": "efdb4bdc457a94b654e9bd6509e70c794a9480e2bd66d5c7fa122e2d8c3db37e",
+        "bundle_sha256": "6e1b7fe09d0a7e186bc6184f8a3a3f77dbb02149bb962a0904945f47b6cb5825",
+        "expected_total_mass_kg": 1.4615,
+        "simulated_total_mass_kg": 1.4615,
+        "link_masses_kg": {
+          "base_link": 1.4035,
+          "rotor_0": 0.0145,
+          "rotor_1": 0.0145,
+          "rotor_2": 0.0145,
+          "rotor_3": 0.0145
+        },
+        "rotor_link_count": 4,
+        "sensors": [
+          "air_pressure_sensor",
+          "imu_sensor",
+          "magnetometer_sensor",
+          "navsat_sensor"
+        ],
+        "px4_autostart": 4001,
+        "px4_params_checked": 28
+      },
+      "runtime_mode": "native",
+      "telemetry_source": "real_native_sitl",
+      "telemetry_points": 434,
+      "mission_started": true,
+      "mission_completed": true,
+      "mission_error": "",
+      "crash_detected": false,
+      "mission_isolation": "linux_namespaces",
+      "hover": {
+        "hold_samples": 181,
+        "hold_duration_s": 18.4,
+        "altitude_rmse_m": 0.058,
+        "horizontal_drift_max_m": 0.081,
+        "roll_std_deg": 0.156,
+        "pitch_std_deg": 0.108,
+        "tilt_max_deg": 0.561,
+        "peak_alt_m": 5.069,
+        "final_alt_m": 0.0
+      },
+      "acceptance": {
+        "scope": "generated_sitl_basic_checks",
+        "passed": true,
+        "reasons": [],
+        "retryable_with_code_change": false,
+        "mission_isolation": "linux_namespaces",
+        "aircraft": "generated",
+        "generated_identity_attested": true,
+        "model_validation_scope": "sitl_catalog_estimate",
+        "generated_aircraft_validated": false,
+        "requirements": {
+          "requested": {
+            "language": "en",
+            "topology": null,
+            "payload_g": null,
+            "max_total_mass_g": null,
+            "altitude_m": 5.0,
+            "endurance_min": null,
+            "hover_s": 15.0,
+            "square_size_m": null,
+            "unresolved": []
+          },
+          "flown": {
+            "topology": "quadcopter",
+            "payload_g": 125.0,
+            "total_mass_g": 1461.5,
+            "max_altitude_m": 5.07
+          }
+        },
+        "flight_conformance": {
+          "evaluated": true,
+          "passed": true,
+          "reasons": [],
+          "retryable_with_code_change": false,
+          "metrics": {
+            "sample_interval_median_s": 0.1,
+            "max_gap_s": 0.16,
+            "mission_samples": 182,
+            "horizontal_error_max_m": 0.049,
+            "horizontal_error_rms_m": 0.023,
+            "altitude_capture_s": 0.0,
+            "altitude_rmse_m": 0.061,
+            "holds": [
+              {
+                "waypoint": 1,
+                "commanded_s": 15.0,
+                "held_s": 18.5
+              }
+            ],
+            "final_alt_m": 0.0,
+            "landing_error_m": 0.052,
+            "max_distance_from_home_m": 0.06
+          },
+          "limits": {
+            "max_median_interval_s": 0.2,
+            "max_gap_s": 1.0,
+            "max_horizontal_error_m": 1.0,
+            "altitude_band_m": 0.5,
+            "max_altitude_capture_s": 10.0,
+            "max_altitude_rmse_m": 0.5,
+            "hold_radius_m": 1.0,
+            "hold_margin_s": 1.0,
+            "landed_max_alt_m": 0.5,
+            "max_landing_error_m": 1.0
+          }
+        }
+      },
+      "wall_time_s": 68.0
+    },
+    {
+      "topology": "quadcopter",
+      "motor_count": 4,
+      "propulsion_source": {
+        "curve_sha256": "26401174e23cd3eaf9237839012078a1d27e81231f528608730e96bb466da91d",
+        "reference": "T-MOTOR store page https://store.tmotor.com/product/mn3110-motor-navigator-type.html, Specifications > Test Data, rows MN3110 KV700 / 14.8 V / T-MOTOR 12*4CF; extract at local catalog evidence/tmotor_mn3110.json",
+        "source_sha256": "6cc91c7ee0f4f5c70dceb891460d0ca2b21da39d92681fb2bcede2df88745e5d"
+      },
+      "payload_g": 400.0,
+      "resolved_spec_sha256": "68dd97ea094e8eacea5fe3126489ada44c8113d176f5dcacc78b876e01db93b6",
+      "bundle_sha256": "24b690b266426719486d3fdf8e7ba5b4011b991e457775ba577a26cc90485413",
+      "expected_total_mass_kg": 1.7365000000000002,
+      "hover_thrust_fraction": 0.3349,
+      "px4_mpc_thr_hover": 0.5044,
+      "rate_gain_scale": {
+        "pitch": 0.7486,
+        "roll": 0.4534,
+        "yaw": 0.6931
+      },
+      "attestation": {
+        "status": "matched",
+        "validation_scope": "sitl_catalog_estimate",
+        "model_instance": "quadfm_68dd97ea094e8eac_0",
+        "model_name": "quadfm_68dd97ea094e8eac",
+        "resolved_spec_sha256": "68dd97ea094e8eacea5fe3126489ada44c8113d176f5dcacc78b876e01db93b6",
+        "bundle_sha256": "24b690b266426719486d3fdf8e7ba5b4011b991e457775ba577a26cc90485413",
+        "expected_total_mass_kg": 1.7365000000000002,
+        "simulated_total_mass_kg": 1.7365,
+        "link_masses_kg": {
+          "base_link": 1.6785,
+          "rotor_0": 0.0145,
+          "rotor_1": 0.0145,
+          "rotor_2": 0.0145,
+          "rotor_3": 0.0145
+        },
+        "rotor_link_count": 4,
+        "sensors": [
+          "air_pressure_sensor",
+          "imu_sensor",
+          "magnetometer_sensor",
+          "navsat_sensor"
+        ],
+        "px4_autostart": 4001,
+        "px4_params_checked": 28
+      },
+      "runtime_mode": "native",
+      "telemetry_source": "real_native_sitl",
+      "telemetry_points": 483,
+      "mission_started": true,
+      "mission_completed": true,
+      "mission_error": "",
+      "crash_detected": false,
+      "mission_isolation": "linux_namespaces",
+      "hover": {
+        "hold_samples": 184,
+        "hold_duration_s": 18.71,
+        "altitude_rmse_m": 0.089,
+        "horizontal_drift_max_m": 0.065,
+        "roll_std_deg": 0.173,
+        "pitch_std_deg": 0.122,
+        "tilt_max_deg": 0.441,
+        "peak_alt_m": 5.075,
+        "final_alt_m": 0.0
+      },
+      "acceptance": {
+        "scope": "generated_sitl_basic_checks",
+        "passed": true,
+        "reasons": [],
+        "retryable_with_code_change": false,
+        "mission_isolation": "linux_namespaces",
+        "aircraft": "generated",
+        "generated_identity_attested": true,
+        "model_validation_scope": "sitl_catalog_estimate",
+        "generated_aircraft_validated": false,
+        "requirements": {
+          "requested": {
+            "language": "en",
+            "topology": null,
+            "payload_g": null,
+            "max_total_mass_g": null,
+            "altitude_m": 5.0,
+            "endurance_min": null,
+            "hover_s": 15.0,
+            "square_size_m": null,
+            "unresolved": []
+          },
+          "flown": {
+            "topology": "quadcopter",
+            "payload_g": 400.0,
+            "total_mass_g": 1736.5,
+            "max_altitude_m": 5.08
+          }
+        },
+        "flight_conformance": {
+          "evaluated": true,
+          "passed": true,
+          "reasons": [],
+          "retryable_with_code_change": false,
+          "metrics": {
+            "sample_interval_median_s": 0.1,
+            "max_gap_s": 0.29,
+            "mission_samples": 171,
+            "horizontal_error_max_m": 0.065,
+            "horizontal_error_rms_m": 0.028,
+            "altitude_capture_s": 0.0,
+            "altitude_rmse_m": 0.085,
+            "holds": [
+              {
+                "waypoint": 1,
+                "commanded_s": 15.0,
+                "held_s": 17.39
+              }
+            ],
+            "final_alt_m": 0.0,
+            "landing_error_m": 0.062,
+            "max_distance_from_home_m": 0.06
+          },
+          "limits": {
+            "max_median_interval_s": 0.2,
+            "max_gap_s": 1.0,
+            "max_horizontal_error_m": 1.0,
+            "altitude_band_m": 0.5,
+            "max_altitude_capture_s": 10.0,
+            "max_altitude_rmse_m": 0.5,
+            "hold_radius_m": 1.0,
+            "hold_margin_s": 1.0,
+            "landed_max_alt_m": 0.5,
+            "max_landing_error_m": 1.0
+          }
+        }
+      },
+      "wall_time_s": 100.6
+    }
+  ]
+}

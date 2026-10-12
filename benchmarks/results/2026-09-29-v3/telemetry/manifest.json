@@ -1,0 +1,218 @@
+{
+  "en-hover-camera_1.json.gz": {
+    "case_id": "en-hover-camera",
+    "repeat": 1,
+    "project_id": "c40dfaff-c682-4f18-8d5d-14b4cf952f32",
+    "outcome": "accepted",
+    "raw_sha256": "ab4c8cfbdd1146786db6c8e9fb56013583188de03c21206e601bd98b65561c61",
+    "raw_bytes": 239416
+  },
+  "en-hover-camera_2.json.gz": {
+    "case_id": "en-hover-camera",
+    "repeat": 2,
+    "project_id": "d27dc455-9248-4f1a-8359-b3b13e68b0e7",
+    "outcome": "accepted",
+    "raw_sha256": "ca994c77f6edfe9d803920035bee9ae7c52e9ef702721f5b17a25950fd5bdbe9",
+    "raw_bytes": 238616
+  },
+  "en-hover-camera_3.json.gz": {
+    "case_id": "en-hover-camera",
+    "repeat": 3,
+    "project_id": "adacb1fc-9698-4828-9a54-ad40e620ab25",
+    "outcome": "accepted",
+    "raw_sha256": "1cb4389dca71c9a1cc3b9578117c8474aa3ce0a31e093a9848b22c9e10da4472",
+    "raw_bytes": 235802
+  },
+  "en-square-inspection_1.json.gz": {
+    "case_id": "en-square-inspection",
+    "repeat": 1,
+    "project_id": "3d9b1a7a-70dd-4d81-a58f-6c98a52509e9",
+    "outcome": "accepted",
+    "raw_sha256": "43fdeed90d5a0b8ff479260034ea9c7e705b479d7050f1702a104da1545f3261",
+    "raw_bytes": 339620
+  },
+  "en-square-inspection_2.json.gz": {
+    "case_id": "en-square-inspection",
+    "repeat": 2,
+    "project_id": "daa47947-a33f-4904-a3df-2b2d297d39e8",
+    "outcome": "accepted",
+    "raw_sha256": "25e8b1df157d4f4707ee2d78b2a9aa3aa0146fd3ad95275dbcfc2d82ee44480c",
+    "raw_bytes": 332009
+  },
+  "en-square-inspection_3.json.gz": {
+    "case_id": "en-square-inspection",
+    "repeat": 3,
+    "project_id": "f36d42ea-9758-4a78-9cee-2a71f359850e",
+    "outcome": "accepted",
+    "raw_sha256": "8a51c4cdf1dab3cc6c76c655a856572288a7c9a3ce806165406adb66aecfe198",
+    "raw_bytes": 329592
+  },
+  "en-out-and-back_1.json.gz": {
+    "case_id": "en-out-and-back",
+    "repeat": 1,
+    "project_id": "2d985b8c-bb51-479e-ae26-ad09ea6c7ae7",
+    "outcome": "accepted",
+    "raw_sha256": "fd3967bb4a15ff25069b09346d0b280c796a1c110738c7a1ee265f55138f052c",
+    "raw_bytes": 256656
+  },
+  "en-out-and-back_2.json.gz": {
+    "case_id": "en-out-and-back",
+    "repeat": 2,
+    "project_id": "7935ffe9-c652-4581-a0da-72115a05d2a1",
+    "outcome": "accepted",
+    "raw_sha256": "e2b03a77de310f88259637d3b95c318134a4ceb09e9573d0294072777f4d8430",
+    "raw_bytes": 257180
+  },
+  "en-out-and-back_3.json.gz": {
+    "case_id": "en-out-and-back",
+    "repeat": 3,
+    "project_id": "747e9a7b-dbdc-46c9-932d-22da3b26f371",
+    "outcome": "accepted",
+    "raw_sha256": "a350a4e498f8b9cfd475fa3d6eb15ae1772fde379b575d510c3f479511f3b0c1",
+    "raw_bytes": 260950
+  },
+  "ar-hover-camera_1.json.gz": {
+    "case_id": "ar-hover-camera",
+    "repeat": 1,
+    "project_id": "ad256620-cd3c-4370-802f-d0d3edbf309d",
+    "outcome": "accepted",
+    "raw_sha256": "56a0d5ced8606faea7fca20c6c98224c0d167ae115bf2e00a07d7f6fd72eb729",
+    "raw_bytes": 241492
+  },
+  "ar-hover-camera_2.json.gz": {
+    "case_id": "ar-hover-camera",
+    "repeat": 2,
+    "project_id": "70e1d901-1cf1-4445-9d3b-3b1208edf4e1",
+    "outcome": "accepted",
+    "raw_sha256": "5f8b728f495a4e6a47da431e071ca4eb89925880c49357a669c827779aace52c",
+    "raw_bytes": 238761
+  },
+  "ar-hover-camera_3.json.gz": {
+    "case_id": "ar-hover-camera",
+    "repeat": 3,
+    "project_id": "521600e3-9e5b-4cbc-90d3-f50dd0e5b479",
+    "outcome": "accepted",
+    "raw_sha256": "97c6b6b4f7b6d6ad4214059728a24020cce222dbfcdc1d4f859f97535666529e",
+    "raw_bytes": 234615
+  },
+  "ar-square-farm_1.json.gz": {
+    "case_id": "ar-square-farm",
+    "repeat": 1,
+    "project_id": "f2fbeeeb-19f0-454c-801f-f786654478c2",
+    "outcome": "accepted",
+    "raw_sha256": "73ef6eb8cbf9d7991a062c56013865258daae21c2dd7e492bd68be2032e87217",
+    "raw_bytes": 353775
+  },
+  "ar-square-farm_2.json.gz": {
+    "case_id": "ar-square-farm",
+    "repeat": 2,
+    "project_id": "75266139-f893-4940-ad35-90ffd8e7f535",
+    "outcome": "accepted",
+    "raw_sha256": "9720242a85ca628d3e247273e9b34594cddf4fefc3e0372ca3c9874388f6d12c",
+    "raw_bytes": 353424
+  },
+  "ar-square-farm_3.json.gz": {
+    "case_id": "ar-square-farm",
+    "repeat": 3,
+    "project_id": "8db6a236-8c8b-4e0a-8b48-a55ae6220e6e",
+    "outcome": "accepted",
+    "raw_sha256": "1f44257406f159d6499b239a952b8b8e1dde5b8483ea1d166600cf17ad69eefa",
+    "raw_bytes": 354919
+  },
+  "ar-out-and-back_1.json.gz": {
+    "case_id": "ar-out-and-back",
+    "repeat": 1,
+    "project_id": "69a48197-79da-4687-aa17-0f9e7a575d14",
+    "outcome": "accepted",
+    "raw_sha256": "de9be2d12ef9e247b411e6c1322bfc96042f08e37f703caea12dc608df024378",
+    "raw_bytes": 272252
+  },
+  "ar-out-and-back_2.json.gz": {
+    "case_id": "ar-out-and-back",
+    "repeat": 2,
+    "project_id": "56825a66-309c-4200-a3f7-e06edb2ade47",
+    "outcome": "accepted",
+    "raw_sha256": "5309f6d358bb5a2aa2c4a551d3c6505986ec9ba1ddf0b909969c90b7ff3ea386",
+    "raw_bytes": 288886
+  },
+  "ar-out-and-back_3.json.gz": {
+    "case_id": "ar-out-and-back",
+    "repeat": 3,
+    "project_id": "c2c562ef-1b6c-469f-9d31-3bfd5ba146f3",
+    "outcome": "accepted",
+    "raw_sha256": "ac7ca79c30d07229ca5e0df76c9478388273ed276f2bfa1fc89a4e57bdb3cd6e",
+    "raw_bytes": 279263
+  },
+  "ar-octocopter-cinema_1.json.gz": {
+    "case_id": "ar-octocopter-cinema",
+    "repeat": 1,
+    "project_id": "bd65de4d-96e7-425c-ad72-ce5362b28947",
+    "outcome": "accepted",
+    "raw_sha256": "074506985da1102668d4c50ad4c3e91966ce9b07f0069f27ff9dde57515596f5",
+    "raw_bytes": 362281
+  },
+  "ar-octocopter-cinema_2.json.gz": {
+    "case_id": "ar-octocopter-cinema",
+    "repeat": 2,
+    "project_id": "3f6675bc-62bb-4c4c-8587-bfc6798c6605",
+    "outcome": "accepted",
+    "raw_sha256": "cb3ee8e39401293716f29b94334ffe4b6309f5cb794d62d66766b72cec17851e",
+    "raw_bytes": 699217
+  },
+  "ar-octocopter-cinema_3.json.gz": {
+    "case_id": "ar-octocopter-cinema",
+    "repeat": 3,
+    "project_id": "8f8b70ad-a704-430b-a97a-4fcbe70ed212",
+    "outcome": "failed_simulation",
+    "raw_sha256": "19f9e17bb1690c2c29c606194201f6f29b9bbc5feb6218e0de1790c62a8500d6",
+    "raw_bytes": 155094
+  },
+  "en-make-a-drone_1.json.gz": {
+    "case_id": "en-make-a-drone",
+    "repeat": 1,
+    "project_id": "6d90b68b-7795-43c7-b1f0-7f1875f4c8b4",
+    "outcome": "accepted",
+    "raw_sha256": "ee4ca38016a27bdb8125fd5b4462c4c617ba5f734ec25492d1046d58b5592e73",
+    "raw_bytes": 682266
+  },
+  "en-make-a-drone_2.json.gz": {
+    "case_id": "en-make-a-drone",
+    "repeat": 2,
+    "project_id": "5a2d087f-5dc7-4289-bc58-f3d18f387c72",
+    "outcome": "accepted",
+    "raw_sha256": "9179ad5e97219456ea13fdf268b2e68a3aaf9527ee34f43771452cfe4f6c8974",
+    "raw_bytes": 710035
+  },
+  "en-make-a-drone_3.json.gz": {
+    "case_id": "en-make-a-drone",
+    "repeat": 3,
+    "project_id": "7ef00f7a-e535-4b2f-bd73-51736cfb4585",
+    "outcome": "accepted",
+    "raw_sha256": "e080c4223cb2bfafee3fc1a441f13ea3111efa86268dcbcba19820c86bd3ba33",
+    "raw_bytes": 641173
+  },
+  "ar-good-drone_1.json.gz": {
+    "case_id": "ar-good-drone",
+    "repeat": 1,
+    "project_id": "a9a41987-d819-4650-8dae-607f0a33126e",
+    "outcome": "accepted",
+    "raw_sha256": "972b680f5ee18a8c704518a2eb76ec9f1986f5ca46c9bed47fcfbda28adb0811",
+    "raw_bytes": 641601
+  },
+  "ar-good-drone_2.json.gz": {
+    "case_id": "ar-good-drone",
+    "repeat": 2,
+    "project_id": "f9213f90-fbfd-482a-b81f-11602265c994",
+    "outcome": "accepted",
+    "raw_sha256": "2c26faae243414058443c92a50dde4847eb9078a6c8d6ad9f71d128ca0b88a2a",
+    "raw_bytes": 638148
+  },
+  "ar-good-drone_3.json.gz": {
+    "case_id": "ar-good-drone",
+    "repeat": 3,
+    "project_id": "5e231f47-6eb6-441d-a9ec-c0e502371db2",
+    "outcome": "accepted",
+    "raw_sha256": "40da589630ed0a4f66cb49d1cf76bee0de7bc47f02240ebe4be15ee803c11800",
+    "raw_bytes": 640785
+  }
+}

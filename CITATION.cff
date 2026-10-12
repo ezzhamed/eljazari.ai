@@ -1,0 +1,64 @@
+cff-version: 1.2.0
+title: "eljazari.ai: a multi-agent system for drone design, code generation and simulated flight test"
+message: "If you use this software, please cite it using these metadata. The bundled AircraftVerse design data is a separate work under CC-BY-4.0 and must be cited independently — see references below."
+type: software
+authors:
+  - given-names: Ezzaldin
+    family-names: Hamed
+    alias: ezzhamed
+repository-code: "https://github.com/ezzhamed/eljazari.ai"
+abstract: >-
+  eljazari.ai turns a natural-language request for a multirotor and its mission,
+  in English or Arabic, into a design and bill of materials from a component
+  catalogue, a flight model of that aircraft estimated from manufacturer motor
+  tests, PX4/MAVSDK mission code checked by a safety layer and approved by a
+  person, and a PX4 SITL + Gazebo flight that a deterministic gate accepts only
+  if it flew the approved mission. LLM agents coordinated by a LangGraph
+  orchestrator write the design and the code. Results are software-in-the-loop
+  simulation only, not calibration, hardware testing or airworthiness.
+keywords:
+  - multi-agent-systems
+  - large-language-models
+  - langgraph
+  - uav
+  - drone-design
+  - px4
+  - gazebo
+  - mavsdk
+  - software-in-the-loop
+  - retrieval-augmented-generation
+  - ai-safety
+license: MIT
+version: 0.1.0-alpha.1
+references:
+  - type: data
+    title: "AircraftVerse: A Large-Scale Multimodal Dataset of Aerial Vehicle Designs"
+    authors:
+      - given-names: Adam D.
+        family-names: Cobb
+      - given-names: Anirban
+        family-names: Roy
+      - given-names: Daniel
+        family-names: Elenius
+      - given-names: F. Michael
+        family-names: Heim
+      - given-names: Brian
+        family-names: Swenson
+      - given-names: Sydney
+        family-names: Whittington
+      - given-names: James D.
+        family-names: Walker
+      - given-names: Theodore
+        family-names: Bapty
+      - given-names: Joseph
+        family-names: Hite
+      - given-names: Karthik
+        family-names: Ramani
+      - given-names: Christopher
+        family-names: McComb
+      - given-names: Susmit
+        family-names: Jha
+    year: 2023
+    doi: "10.5281/zenodo.6525446"
+    license: CC-BY-4.0
+    notes: "Design corpus bundled under data/aircraftverse/. Licensed CC-BY-4.0, not MIT."

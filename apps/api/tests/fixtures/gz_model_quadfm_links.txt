@@ -1,0 +1,184 @@
+
+Requesting state for world [default]...
+
+- Link [11]
+  - Name: base_link
+  - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+  - Mass (kg): 0.609500
+  - Inertial Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.015255]
+    [0.000000 -0.000000 0.000000]
+  - Inertial Matrix (kg.m^2):
+    [0.001790 0.000000 0.000000]
+    [0.000000 0.001938 0.000000]
+    [0.000000 0.000000 0.002155]
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.000000]
+    [0.000000 -0.000000 0.000000]
+  - Sensor [38]
+    - Name: air_pressure_sensor
+    - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+    - Pose [ XYZ (m) ] [ RPY (rad) ]:
+      [0.000000 0.000000 0.000000]
+      [0.000000 -0.000000 0.000000]
+    - Reference altitude (m): 0
+    - Pressure noise:
+      - Mean (Pa): 0
+      - Bias mean (Pa): 0
+      - Standard deviation (Pa): 3
+      - Bias standard deviation (Pa): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (Pa): 0
+      - Dynamic bias correlation time (s): 0
+  - Sensor [39]
+    - Name: magnetometer_sensor
+    - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+    - Pose [ XYZ (m) ] [ RPY (rad) ]:
+      [0.000000 0.000000 0.000000]
+      [0.000000 -0.000000 0.000000]
+    - X-axis noise:
+      - Mean (T): 0
+      - Bias mean (T): 0
+      - Standard deviation (T): 0.0001
+      - Bias standard deviation (T): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (T): 0
+      - Dynamic bias correlation time (s): 0
+    - Y-axis noise:
+      - Mean (T): 0
+      - Bias mean (T): 0
+      - Standard deviation (T): 0.0001
+      - Bias standard deviation (T): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (T): 0
+      - Dynamic bias correlation time (s): 0
+    - Z-axis noise:
+      - Mean (T): 0
+      - Bias mean (T): 0
+      - Standard deviation (T): 0.0001
+      - Bias standard deviation (T): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (T): 0
+      - Dynamic bias correlation time (s): 0
+  - Sensor [40]
+    - Name: imu_sensor
+    - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+    - Pose [ XYZ (m) ] [ RPY (rad) ]:
+      [0.000000 0.000000 0.000000]
+      [0.000000 -0.000000 0.000000]
+    - Linear acceleration X-axis noise:
+      - Mean (m/s^2): 0
+      - Bias mean (m/s^2): 0
+      - Standard deviation (m/s^2): 0.00637
+      - Bias standard deviation (m/s^2): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (m/s^2): 0
+      - Dynamic bias correlation time (s): 0
+    - Linear acceleration Y-axis noise:
+      - Mean (m/s^2): 0
+      - Bias mean (m/s^2): 0
+      - Standard deviation (m/s^2): 0.00637
+      - Bias standard deviation (m/s^2): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (m/s^2): 0
+      - Dynamic bias correlation time (s): 0
+    - Linear acceleration Z-axis noise:
+      - Mean (m/s^2): 0
+      - Bias mean (m/s^2): 0
+      - Standard deviation (m/s^2): 0.00686
+      - Bias standard deviation (m/s^2): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (m/s^2): 0
+      - Dynamic bias correlation time (s): 0
+    - Angular velocity X-axis noise:
+      - Mean (rad/s): 0
+      - Bias mean (rad/s): 0
+      - Standard deviation (rad/s): 0.000872665
+      - Bias standard deviation (rad/s): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (rad/s): 0
+      - Dynamic bias correlation time (s): 0
+    - Angular velocity Y-axis noise:
+      - Mean (rad/s): 0
+      - Bias mean (rad/s): 0
+      - Standard deviation (rad/s): 0.000872665
+      - Bias standard deviation (rad/s): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (rad/s): 0
+      - Dynamic bias correlation time (s): 0
+    - Angular velocity Z-axis noise:
+      - Mean (rad/s): 0
+      - Bias mean (rad/s): 0
+      - Standard deviation (rad/s): 0.000872665
+      - Bias standard deviation (rad/s): 0
+      - Precision: 0
+      - Dynamic bias standard deviation (rad/s): 0
+      - Dynamic bias correlation time (s): 0
+    - Gravity direction X [XYZ]: 1 0 0
+    - Gravity direction X parent frame:
+    - Localization:CUSTOM
+    - Custom RPY: 0 0 0
+    - Custom RPY parent frame:
+    - Orientation enabled:1
+  - Sensor [41]
+    - Name: navsat_sensor
+    - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+    - Pose [ XYZ (m) ] [ RPY (rad) ]:
+      [0.000000 0.000000 0.000000]
+      [0.000000 -0.000000 0.000000]
+- Link [42]
+  - Name: rotor_0
+  - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+  - Mass (kg): 0.004200
+  - Inertial Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.000000]
+    [0.000000 -0.000000 0.000000]
+  - Inertial Matrix (kg.m^2):
+    [0.000004 0.000000 0.000000]
+    [0.000000 0.000004 0.000000]
+    [0.000000 0.000000 0.000008]
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.079903 -0.079903 0.035000]
+    [0.000000 -0.000000 -0.000000]
+- Link [44]
+  - Name: rotor_1
+  - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+  - Mass (kg): 0.004200
+  - Inertial Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.000000]
+    [0.000000 -0.000000 0.000000]
+  - Inertial Matrix (kg.m^2):
+    [0.000004 0.000000 0.000000]
+    [0.000000 0.000004 0.000000]
+    [0.000000 0.000000 0.000008]
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [-0.079903 0.079903 0.035000]
+    [0.000000 -0.000000 -0.000000]
+- Link [46]
+  - Name: rotor_2
+  - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+  - Mass (kg): 0.004200
+  - Inertial Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.000000]
+    [0.000000 -0.000000 0.000000]
+  - Inertial Matrix (kg.m^2):
+    [0.000004 0.000000 0.000000]
+    [0.000000 0.000004 0.000000]
+    [0.000000 0.000000 0.000008]
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.079903 0.079903 0.035000]
+    [0.000000 -0.000000 -0.000000]
+- Link [48]
+  - Name: rotor_3
+  - Parent: quadfm_77aa9fc9ee789aa5_0 [10]
+  - Mass (kg): 0.004200
+  - Inertial Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [0.000000 0.000000 0.000000]
+    [0.000000 -0.000000 0.000000]
+  - Inertial Matrix (kg.m^2):
+    [0.000004 0.000000 0.000000]
+    [0.000000 0.000004 0.000000]
+    [0.000000 0.000000 0.000008]
+  - Pose [ XYZ (m) ] [ RPY (rad) ]:
+    [-0.079903 -0.079903 0.035000]
+    [0.000000 -0.000000 -0.000000]

@@ -1,0 +1,438 @@
+{
+  "suite": "prompt_suite_v2",
+  "runs": 48,
+  "categories": {
+    "ambiguous": {
+      "runs": 6,
+      "scored_runs": 0,
+      "correct": null,
+      "correct_rate": null,
+      "correct_rate_wilson95": null,
+      "decided": 6,
+      "outcomes": {
+        "accepted": 6
+      },
+      "wall_time_s": {
+        "p50": 381.64,
+        "p95": 509.81,
+        "max": 509.81
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 2,
+      "code_fallback_runs": 0
+    },
+    "impossible": {
+      "runs": 15,
+      "scored_runs": 15,
+      "correct": 15,
+      "correct_rate": 1.0,
+      "correct_rate_wilson95": [
+        0.7961166964035129,
+        1.0
+      ],
+      "decided": 15,
+      "outcomes": {
+        "blocked_simulation": 3,
+        "rejected_components": 9,
+        "rejected_prompt": 3
+      },
+      "wall_time_s": {
+        "p50": 39.99,
+        "p95": 273.41,
+        "max": 273.41
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 12,
+      "code_fallback_runs": 0
+    },
+    "supported": {
+      "runs": 21,
+      "scored_runs": 21,
+      "correct": 20,
+      "correct_rate": 0.9523809523809523,
+      "correct_rate_wilson95": [
+        0.7733063972991618,
+        0.9915440122838988
+      ],
+      "decided": 21,
+      "outcomes": {
+        "accepted": 20,
+        "failed_simulation": 1
+      },
+      "wall_time_s": {
+        "p50": 282.37,
+        "p95": 418.36,
+        "max": 435.26
+      },
+      "retries": {
+        "total": 1,
+        "max": 1,
+        "runs_with_retry": 1
+      },
+      "design_not_from_llm_runs": 6,
+      "code_fallback_runs": 1
+    },
+    "unsupported": {
+      "runs": 6,
+      "scored_runs": 6,
+      "correct": 6,
+      "correct_rate": 1.0,
+      "correct_rate_wilson95": [
+        0.6096657083436265,
+        1.0
+      ],
+      "decided": 6,
+      "outcomes": {
+        "rejected_components": 3,
+        "rejected_model": 3
+      },
+      "wall_time_s": {
+        "p50": 10.8,
+        "p95": 68.71,
+        "max": 68.71
+      },
+      "retries": {
+        "total": 0,
+        "max": 0,
+        "runs_with_retry": 0
+      },
+      "design_not_from_llm_runs": 6,
+      "code_fallback_runs": 0
+    }
+  },
+  "languages": {
+    "ar": {
+      "scored_runs": 21,
+      "correct": 20,
+      "correct_rate": 0.9523809523809523
+    },
+    "en": {
+      "scored_runs": 21,
+      "correct": 21,
+      "correct_rate": 1.0
+    }
+  },
+  "cases": {
+    "ar-altitude-limit": {
+      "category": "impossible",
+      "language": "ar",
+      "outcomes": [
+        "rejected_prompt",
+        "rejected_prompt",
+        "rejected_prompt"
+      ],
+      "correct": 3
+    },
+    "ar-good-drone": {
+      "category": "ambiguous",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.843,
+          "altitude_rmse_m": 0.086,
+          "landing_error_m": 0.052
+        },
+        {
+          "horizontal_error_max_m": 0.872,
+          "altitude_rmse_m": 0.086,
+          "landing_error_m": 0.023
+        },
+        {
+          "horizontal_error_max_m": 0.868,
+          "altitude_rmse_m": 0.095,
+          "landing_error_m": 0.047
+        }
+      ],
+      "correct": null
+    },
+    "ar-heavy-lift": {
+      "category": "impossible",
+      "language": "ar",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "ar-hover-camera": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.058,
+          "altitude_rmse_m": 0.077,
+          "landing_error_m": 0.02
+        },
+        {
+          "horizontal_error_max_m": 0.043,
+          "altitude_rmse_m": 0.076,
+          "landing_error_m": 0.066
+        },
+        {
+          "horizontal_error_max_m": 0.047,
+          "altitude_rmse_m": 0.083,
+          "landing_error_m": 0.034
+        }
+      ],
+      "correct": 3
+    },
+    "ar-octocopter-cinema": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "failed_simulation"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.304,
+          "altitude_rmse_m": 0.097,
+          "landing_error_m": 0.029
+        },
+        {
+          "horizontal_error_max_m": 0.941,
+          "altitude_rmse_m": 0.086,
+          "landing_error_m": 0.01
+        }
+      ],
+      "correct": 2
+    },
+    "ar-out-and-back": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.335,
+          "altitude_rmse_m": 0.191,
+          "landing_error_m": 0.035
+        },
+        {
+          "horizontal_error_max_m": 0.33,
+          "altitude_rmse_m": 0.174,
+          "landing_error_m": 0.044
+        },
+        {
+          "horizontal_error_max_m": 0.309,
+          "altitude_rmse_m": 0.074,
+          "landing_error_m": 0.015
+        }
+      ],
+      "correct": 3
+    },
+    "ar-square-farm": {
+      "category": "supported",
+      "language": "ar",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.577,
+          "altitude_rmse_m": 0.094,
+          "landing_error_m": 0.026
+        },
+        {
+          "horizontal_error_max_m": 0.619,
+          "altitude_rmse_m": 0.074,
+          "landing_error_m": 0.038
+        },
+        {
+          "horizontal_error_max_m": 0.619,
+          "altitude_rmse_m": 0.096,
+          "landing_error_m": 0.082
+        }
+      ],
+      "correct": 3
+    },
+    "ar-tricopter-hover": {
+      "category": "unsupported",
+      "language": "ar",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "en-endurance": {
+      "category": "impossible",
+      "language": "en",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "en-fixed-wing-survey": {
+      "category": "unsupported",
+      "language": "en",
+      "outcomes": [
+        "rejected_model",
+        "rejected_model",
+        "rejected_model"
+      ],
+      "correct": 3
+    },
+    "en-hexacopter-spray": {
+      "category": "impossible",
+      "language": "en",
+      "outcomes": [
+        "blocked_simulation",
+        "blocked_simulation",
+        "blocked_simulation"
+      ],
+      "correct": 3
+    },
+    "en-hover-camera": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.044,
+          "altitude_rmse_m": 0.072,
+          "landing_error_m": 0.032
+        },
+        {
+          "horizontal_error_max_m": 0.049,
+          "altitude_rmse_m": 0.082,
+          "landing_error_m": 0.048
+        },
+        {
+          "horizontal_error_max_m": 0.049,
+          "altitude_rmse_m": 0.078,
+          "landing_error_m": 0.069
+        }
+      ],
+      "correct": 3
+    },
+    "en-make-a-drone": {
+      "category": "ambiguous",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.771,
+          "altitude_rmse_m": 0.108,
+          "landing_error_m": 0.06
+        },
+        {
+          "horizontal_error_max_m": 0.836,
+          "altitude_rmse_m": 0.095,
+          "landing_error_m": 0.078
+        },
+        {
+          "horizontal_error_max_m": 0.872,
+          "altitude_rmse_m": 0.089,
+          "landing_error_m": 0.075
+        }
+      ],
+      "correct": null
+    },
+    "en-mass-paradox": {
+      "category": "impossible",
+      "language": "en",
+      "outcomes": [
+        "rejected_components",
+        "rejected_components",
+        "rejected_components"
+      ],
+      "correct": 3
+    },
+    "en-out-and-back": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.275,
+          "altitude_rmse_m": 0.096,
+          "landing_error_m": 0.052
+        },
+        {
+          "horizontal_error_max_m": 0.34,
+          "altitude_rmse_m": 0.099,
+          "landing_error_m": 0.045
+        },
+        {
+          "horizontal_error_max_m": 0.302,
+          "altitude_rmse_m": 0.093,
+          "landing_error_m": 0.021
+        }
+      ],
+      "correct": 3
+    },
+    "en-square-inspection": {
+      "category": "supported",
+      "language": "en",
+      "outcomes": [
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "accepted_flights": [
+        {
+          "horizontal_error_max_m": 0.528,
+          "altitude_rmse_m": 0.094,
+          "landing_error_m": 0.062
+        },
+        {
+          "horizontal_error_max_m": 0.513,
+          "altitude_rmse_m": 0.096,
+          "landing_error_m": 0.036
+        },
+        {
+          "horizontal_error_max_m": 0.563,
+          "altitude_rmse_m": 0.1,
+          "landing_error_m": 0.032
+        }
+      ],
+      "correct": 3
+    }
+  },
+  "method": {
+    "percentiles": "nearest-rank over every run in the category, including failures",
+    "interval": "Wilson score, 95%",
+    "retries": "extra code generations + extra simulation attempts in one run"
+  }
+}

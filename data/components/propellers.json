@@ -1,0 +1,68 @@
+[
+  {
+    "part_number": "hqprop_5x4_5x3_v1s",
+    "manufacturer": "HQ Prop",
+    "model_name": "5x4.5x3 V1S",
+    "diameter_inch": 5.0,
+    "pitch_inch": 4.5,
+    "blades": 3,
+    "material": "polycarbonate",
+    "weight_g": 4.2,
+    "max_rpm_safe": 30000,
+    "hub_id_mm": 5.0,
+    "price_usd": 2.49,
+    "url": "https://www.getfpv.com/hq-prop-5x4-5x3-v1s.html"
+  },
+  {
+    "part_number": "tmotor_t5147",
+    "manufacturer": "T-Motor",
+    "model_name": "T5147",
+    "diameter_inch": 5.1,
+    "pitch_inch": 4.7,
+    "blades": 3,
+    "material": "polycarbonate",
+    "weight_g": 4.5,
+    "max_rpm_safe": 28500,
+    "hub_id_mm": 5.0,
+    "price_usd": 2.99
+  },
+  {
+    "part_number": "gemfan_hurricane_51466",
+    "manufacturer": "Gemfan",
+    "model_name": "Hurricane 51466",
+    "diameter_inch": 5.1,
+    "pitch_inch": 4.6,
+    "blades": 3,
+    "material": "polycarbonate",
+    "weight_g": 4.4,
+    "max_rpm_safe": 30000,
+    "hub_id_mm": 5.0,
+    "price_usd": 2.79
+  },
+  {
+    "part_number": "hqprop_4x4_3x3",
+    "manufacturer": "HQ Prop",
+    "model_name": "4x4.3x3",
+    "diameter_inch": 4.0,
+    "pitch_inch": 4.3,
+    "blades": 3,
+    "material": "polycarbonate",
+    "weight_g": 2.8,
+    "max_rpm_safe": 35000,
+    "hub_id_mm": 5.0,
+    "price_usd": 1.99
+  },
+  {
+    "part_number": "gemfan_3018_2",
+    "manufacturer": "Gemfan",
+    "model_name": "3018-2 (micro)",
+    "diameter_inch": 3.0,
+    "pitch_inch": 1.8,
+    "blades": 2,
+    "material": "polycarbonate",
+    "weight_g": 1.0,
+    "max_rpm_safe": 40000,
+    "hub_id_mm": 1.5,
+    "price_usd": 0.99
+  }
+]

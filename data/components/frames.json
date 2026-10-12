@@ -1,0 +1,157 @@
+[
+  {
+    "part_number": "iflight_nazgul_evoque_f5",
+    "manufacturer": "iFlight",
+    "model_name": "Nazgul Evoque F5",
+    "geometry": "X",
+    "wheelbase_mm": 226.0,
+    "arm_length_mm": 113.0,
+    "arm_thickness_mm": 5.0,
+    "material": "carbon_fiber",
+    "weight_g": 119.0,
+    "motor_mount_pattern_mm": [
+      16.0,
+      16.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 5.1,
+    "price_usd": 49.99,
+    "url": "https://shop.iflight-rc.com/Nazgul-Evoque-F5",
+    "arm_count": 4
+  },
+  {
+    "part_number": "tbs_source_one_v4_5",
+    "manufacturer": "TBS",
+    "model_name": "Source One V4 5-inch",
+    "geometry": "X",
+    "wheelbase_mm": 220.0,
+    "arm_length_mm": 110.0,
+    "arm_thickness_mm": 5.0,
+    "material": "carbon_fiber",
+    "weight_g": 105.0,
+    "motor_mount_pattern_mm": [
+      16.0,
+      16.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 5.1,
+    "price_usd": 39.99,
+    "arm_count": 4
+  },
+  {
+    "part_number": "holybro_x500_v2",
+    "manufacturer": "Holybro",
+    "model_name": "X500 V2",
+    "geometry": "X",
+    "wheelbase_mm": 500.0,
+    "arm_length_mm": 250.0,
+    "arm_thickness_mm": 16.0,
+    "material": "carbon_fiber",
+    "weight_g": 610.0,
+    "motor_mount_pattern_mm": [
+      19.0,
+      19.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 12.0,
+    "price_usd": 199.99,
+    "arm_count": 4
+  },
+  {
+    "part_number": "iflight_chimera_x7",
+    "manufacturer": "iFlight",
+    "model_name": "ChimeraX 7 (heavy lift)",
+    "geometry": "X",
+    "wheelbase_mm": 295.0,
+    "arm_length_mm": 147.0,
+    "arm_thickness_mm": 6.0,
+    "material": "carbon_fiber",
+    "weight_g": 169.0,
+    "motor_mount_pattern_mm": [
+      16.0,
+      16.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 7.5,
+    "price_usd": 79.99,
+    "arm_count": 4
+  },
+  {
+    "part_number": "happymodel_mobeetle6",
+    "manufacturer": "HappyModel",
+    "model_name": "Mobeetle6 (micro)",
+    "geometry": "X",
+    "wheelbase_mm": 65.0,
+    "arm_length_mm": 32.0,
+    "arm_thickness_mm": 1.5,
+    "material": "carbon_fiber",
+    "weight_g": 7.5,
+    "motor_mount_pattern_mm": [
+      9.0,
+      9.0
+    ],
+    "fc_stack_size_mm": [
+      25,
+      25
+    ],
+    "max_prop_size_inch": 1.6,
+    "price_usd": 19.99,
+    "arm_count": 4
+  },
+  {
+    "part_number": "tarot_680_pro_hex",
+    "manufacturer": "Tarot",
+    "model_name": "680 Pro Hex (industrial)",
+    "geometry": "X",
+    "wheelbase_mm": 695.0,
+    "arm_length_mm": 347.0,
+    "arm_thickness_mm": 16.0,
+    "material": "carbon_fiber",
+    "weight_g": 720.0,
+    "motor_mount_pattern_mm": [
+      25.0,
+      25.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 17.0,
+    "price_usd": 269.99,
+    "arm_count": 6
+  },
+  {
+    "part_number": "tarot_x8_tl8x000",
+    "manufacturer": "Tarot",
+    "model_name": "X8 TL8X000 octocopter",
+    "geometry": "X",
+    "wheelbase_mm": 1050.0,
+    "arm_length_mm": 525.0,
+    "arm_thickness_mm": 16.0,
+    "material": "carbon_fiber",
+    "weight_g": 2700.0,
+    "motor_mount_pattern_mm": [
+      25.0,
+      25.0
+    ],
+    "fc_stack_size_mm": [
+      30,
+      30
+    ],
+    "max_prop_size_inch": 15.0,
+    "arm_count": 8,
+    "url": "https://store.foxtech.com/x8-octocopter-frame-tl8x000/"
+  }
+]

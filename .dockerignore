@@ -1,0 +1,44 @@
+# Keep secrets, local state and caches out of every build context.
+# Dockerfile.api/.celery copy all of apps/api/ and data/, so without this a local
+# build baked .env files, the Chroma index and project outputs in data/storage,
+# and test caches into the image. CI builds a clean checkout; this protects
+# builds from a working copy.
+
+.git
+**/.env
+**/.env.*
+!**/.env.example
+
+**/node_modules
+**/.next
+.turbo
+
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.pytest_tmp
+**/.pytest-local-tmp
+**/pytest_tmp_run
+**/.ruff_cache
+**/.mypy_cache
+**/*.log
+
+# Local state and run outputs
+data/storage
+apps/api/data/storage
+artifacts
+cli_runs
+run-logs
+.codex-tmp
+.claude
+# A Windows path mis-used as a directory name under WSL (C:\Users\...).
+apps/api/C*
+
+.local
+
+data/aircraftverse/vector_index
+
+**/.venv
+**/venv
+**/chroma_db
+.codex

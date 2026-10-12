@@ -1,0 +1,184 @@
+# ── Stage 1: base ROS2 + Gazebo ──────────────────────────────────────────────
+FROM osrf/ros:jazzy-desktop AS base
+
+LABEL org.opencontainers.image.source="https://github.com/ezzhamed/eljazari.ai"
+LABEL org.opencontainers.image.description="eljazari.ai Gazebo Harmonic + PX4 SITL container, pinned to the commit validated under WSL"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Add Gazebo Harmonic apt repository (not included in osrf/ros:jazzy-desktop by default)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl gnupg lsb-release \
+    && curl https://packages.osrfoundation.org/gazebo.gpg \
+       --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
+       http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+       > /etc/apt/sources.list.d/gazebo-stable.list \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gz-harmonic \
+    ros-jazzy-ros-gz \
+    ros-jazzy-mavros \
+    ros-jazzy-mavros-extras \
+    python3-pip \
+    curl wget git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python simulation deps (mavsdk via pip — no apt package available).
+#
+# --break-system-packages is required, not incidental: the base image moved to
+# Ubuntu 24.04 / Python 3.12, which ships /usr/lib/python3.12/EXTERNALLY-MANAGED,
+# so PEP 668 makes pip refuse to touch the system interpreter and this layer
+# failed instantly with `error: externally-managed-environment`.
+#
+# A venv is the usual answer and is wrong here: the container's entrypoint is the
+# ros2 CLI, whose console scripts are pinned to `#!/usr/bin/python3` by apt, so
+# they would never see a venv's site-packages. ROS and the mission code must share
+# one interpreter, and in a single-purpose container that interpreter is the
+# system one.
+RUN pip3 install --no-cache-dir --break-system-packages \
+    mavsdk==2.1.0 \
+    pymavlink==2.4.41 \
+    aiohttp \
+    python-socketio[asyncio_client]
+
+# ── Stage 2: build PX4 SITL ──────────────────────────────────────────────────
+# Built FROM base on purpose: PX4 only compiles its gz_bridge and Gazebo system
+# plugins when the Harmonic development headers are visible at configure time.
+# Building on a bare Ubuntu would silently produce a px4 binary that cannot talk
+# to Gazebo — the assertion at the end of this stage exists to catch exactly that.
+FROM base AS px4-builder
+
+# The exact commit every SITL result in docs/ was produced with (WSL:
+# `git describe` = v1.17.0-alpha1-1535-g14529d6af3), so the container flies the
+# same PX4 as the evidence. Bump both together, deliberately.
+ARG PX4_REF=14529d6af3adad05b938fd6bc87cb92c3920147b
+ARG PX4_VERSION_TAG=v1.17.0-alpha1
+ARG PX4_SRC=/opt/px4/PX4-Autopilot
+# Parallel compile jobs; the default PX4 build uses every core and can exhaust
+# the memory Docker Desktop shares with WSL.
+ARG BUILD_JOBS=4
+
+# PX4's own setup script shells out to pip, and Noble's PEP 668 marker would stop
+# it the same way it stopped the layer above. Set once for the whole stage.
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sudo build-essential cmake ninja-build ccache \
+    python3-dev python3-setuptools \
+    libeigen3-dev libopencv-dev protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fetch exactly one commit (depth 1) and its submodules except NuttX, which
+# px4_sitl_default never compiles. PX4's version header requires a vX.Y.Z tag
+# and fails the build on a bare hash, so the commit is tagged locally with the
+# release it descends from.
+RUN set -eux; \
+    git init "$PX4_SRC"; cd "$PX4_SRC"; \
+    git remote add origin https://github.com/PX4/PX4-Autopilot.git; \
+    git fetch --depth 1 origin "$PX4_REF"; \
+    git checkout --detach FETCH_HEAD; \
+    git tag "$PX4_VERSION_TAG"; \
+    git submodule update --init --recursive --depth 1 --jobs 4 -- \
+        $(git config --file .gitmodules --get-regexp '\.path$' | awk '{print $2}' \
+          | grep -v '^platforms/nuttx/NuttX/'); \
+    test "$(git rev-parse HEAD)" = "$PX4_REF"
+
+WORKDIR ${PX4_SRC}
+
+# NuttX must stay unchecked-out. A shallow clone of it has no tags, and
+# src/lib/version/px_update_git_header.py does
+# `re.findall(r'nuttx-[0-9]+\.[0-9]+\.[0-9]+', tags)[-1]` once it sees the
+# checkout, so the build would die with IndexError at "Generating git version
+# header". The script skips NuttX entirely when the submodule is absent, which is
+# the truthful state: px4_sitl_default targets posix and never compiles NuttX.
+# The fetch above excludes it; this guards against a future edit that does not.
+RUN test ! -e platforms/nuttx/NuttX/nuttx/.git
+
+RUN bash ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
+
+RUN make px4_sitl_default -j"${BUILD_JOBS}"
+
+# Stage only the artifacts the runtime needs. The full build tree is ~8 GB of
+# object files; the paths kept here are precisely the ones referenced by
+# GazeboService._gz_runtime_env() and _start_px4_sitl().
+RUN set -eux; \
+    build=build/px4_sitl_default; \
+    test -x "$build/bin/px4" || { echo "PX4 binary was not produced"; exit 1; }; \
+    test -d "$build/src/modules/simulation/gz_plugins" || { \
+        echo "Gazebo system plugins were not built — PX4 did not detect Harmonic"; exit 1; }; \
+    out=/opt/px4-dist/PX4-Autopilot; \
+    mkdir -p "$out/$build/src/modules/simulation" \
+             "$out/Tools/simulation" \
+             "$out/src/modules/simulation/gz_bridge"; \
+    cp -a "$build/bin"     "$out/$build/"; \
+    cp -a "$build/rootfs"  "$out/$build/"; \
+    cp -a "$build/src/modules/simulation/gz_plugins" "$out/$build/src/modules/simulation/"; \
+    mkdir -p "$out/$build/OpticalFlow/install"; \
+    cp -a "$build/OpticalFlow/install/lib" "$out/$build/OpticalFlow/install/"; \
+    cp -a ROMFS            "$out/"; \
+    cp -a Tools/simulation/gz "$out/Tools/simulation/"; \
+    cp -a src/modules/simulation/gz_bridge/server.config "$out/src/modules/simulation/gz_bridge/"
+
+# ── Stage 3: runtime ─────────────────────────────────────────────────────────
+FROM base AS runtime
+
+ENV PX4_DIR=/opt/px4/PX4-Autopilot
+COPY --from=px4-builder /opt/px4-dist/PX4-Autopilot ${PX4_DIR}
+
+# The Gazebo plugins carry an absolute RUNPATH back into the build tree, so
+# staging the plugin directory alone is not enough — libOpticalFlowSystem.so
+# needs libOpticalFlow.so from OpticalFlow/install/lib, and an incomplete stage
+# surfaces only as a Gazebo "cannot open shared object file" at container start,
+# which is easy to mistake for an upstream defect. Fail the build instead.
+RUN set -eu; \
+    missing=0; \
+    for so in ${PX4_DIR}/build/px4_sitl_default/src/modules/simulation/gz_plugins/*.so; do \
+      if ldd "$so" | grep -q "not found"; then \
+        echo "unresolved shared libraries in $so:"; \
+        ldd "$so" | grep "not found"; \
+        missing=1; \
+      fi; \
+    done; \
+    [ "$missing" -eq 0 ]
+
+# The generated missions are validated with mavsdk 3.15.3 (the WSL mission
+# venv), and the mission runner runs inside this stage. Upgraded here, not in
+# base, so the PX4 build layers stay cached.
+RUN pip3 install --no-cache-dir --break-system-packages mavsdk==3.15.3
+
+WORKDIR /simulation
+
+# Simulation world configs. docker-compose bind-mounts the host's simulation/
+# over this path; the copy is what makes the image usable on its own.
+COPY simulation/ ./
+
+# Entrypoint lives outside /simulation so the bind-mount above cannot shadow it.
+COPY infrastructure/sim-entrypoint.sh /usr/local/bin/sim-entrypoint.sh
+# The MAVSDK link patch shared with the WSL runtime (see the entrypoint).
+COPY apps/api/utils/px4_mavlink_patch.py /usr/local/bin/px4_mavlink_patch.py
+# The mission runner and its namespace sandbox, run per mission through docker exec
+# (apps/api/services/docker_sim.py).
+COPY apps/api/utils/wsl_mission_runner.py apps/api/utils/mission_sandbox.py \
+     apps/api/utils/mission_sandbox_entry.py apps/api/utils/mavsdk_runtime_adapter.py \
+     /opt/eljazari/utils/
+RUN chmod +x /usr/local/bin/sim-entrypoint.sh
+
+# Source ROS2 for interactive shells (the entrypoint sources it itself)
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc
+
+# 14550 GCS · 14540 MAVSDK · 14556 onboard · 11345 gz transport · 18570 PX4 local
+EXPOSE 14540/udp 14550/udp 14556/udp 11345 18570/udp
+
+# Both halves must be alive. Gazebo running with a dead PX4 is not a simulator,
+# and the previous check looked only for "gz sim".
+HEALTHCHECK --interval=60s --timeout=15s --start-period=180s --retries=3 \
+  CMD pgrep -f "gz-sim-server|gz sim" >/dev/null && \
+      { [ "$SIM_MODE" = gazebo ] || pgrep -x px4 >/dev/null; } || exit 1
+
+ENTRYPOINT ["/usr/local/bin/sim-entrypoint.sh"]
+
+# How utils/sitl_runtime.py finds this container in docker mode. Kept in the last
+# stage so changing it does not invalidate the PX4 build cache.
+LABEL ai.eljazari.role="px4-sitl"

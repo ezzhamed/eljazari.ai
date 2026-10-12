@@ -1,0 +1,116 @@
+name: CD — Deploy to Staging
+
+on:
+  workflow_run:
+    workflows: ["CI — Lint · Type-check · Test · Build"]
+    branches: [main]
+    types: [completed]
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari-agents
+  K8S_NAMESPACE: eljazari-staging
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    # Off unless the repository variable ENABLE_STAGING_DEPLOY is 'true', so the
+    # public repository and forks do not start a deploy job on every push.
+    if: ${{ vars.ENABLE_STAGING_DEPLOY == 'true' && github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: staging
+      url: https://staging.eljazari.ai
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Check K8s credentials
+        id: check_creds
+        run: |
+          if [ -z "${{ secrets.KUBE_CONFIG_STAGING }}" ]; then
+            echo "KUBE_CONFIG_STAGING not configured — skipping K8s deployment"
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up kubectl
+        if: steps.check_creds.outputs.has_creds == 'true'
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.31.0"
+
+      - name: Configure kubeconfig (staging)
+        if: steps.check_creds.outputs.has_creds == 'true'
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
+
+      - name: Run DB migrations
+        if: steps.check_creds.outputs.has_creds == 'true'
+        run: |
+          kubectl run db-migrate-${{ env.IMAGE_TAG }} \
+            --image=${{ env.IMAGE_PREFIX }}/api:${{ env.IMAGE_TAG }} \
+            --namespace=${{ env.K8S_NAMESPACE }} \
+            --restart=Never \
+            --command -- alembic upgrade head \
+            --env="DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" \
+            --wait \
+            --timeout=120s
+          kubectl logs db-migrate-${{ env.IMAGE_TAG }} -n ${{ env.K8S_NAMESPACE }}
+          kubectl delete pod db-migrate-${{ env.IMAGE_TAG }} -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Update image tags
+        if: steps.check_creds.outputs.has_creds == 'true'
+        run: |
+          kubectl set image deployment/api \
+            api=${{ env.IMAGE_PREFIX }}/api:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl set image deployment/web \
+            web=${{ env.IMAGE_PREFIX }}/web:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl set image deployment/celery-worker \
+            celery-worker=${{ env.IMAGE_PREFIX }}/celery:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Wait for rollout
+        if: steps.check_creds.outputs.has_creds == 'true'
+        run: |
+          kubectl rollout status deployment/api -n ${{ env.K8S_NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/web -n ${{ env.K8S_NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/celery-worker -n ${{ env.K8S_NAMESPACE }} --timeout=5m
+
+      - name: Smoke tests
+        if: steps.check_creds.outputs.has_creds == 'true'
+        run: |
+          STAGING_URL="https://staging.api.eljazari.ai"
+          echo "Testing health endpoint..."
+          curl -sf "$STAGING_URL/health" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          assert data.get('status') == 'ok', f'Health check failed: {data}'
+          print('Health check passed:', data)
+          "
+          echo "Testing API docs..."
+          curl -sf "$STAGING_URL/docs" > /dev/null
+          echo "All smoke tests passed."
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Staging deployment failed for `${{ env.IMAGE_TAG }}`. Check [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).'
+            })

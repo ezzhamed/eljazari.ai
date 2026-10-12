@@ -1,0 +1,29 @@
+# Standalone SITL stack — Gazebo Harmonic + PX4 v1.16, without the rest of the
+# platform. For the full stack use infrastructure/docker-compose.yml with the
+# `simulation` profile instead.
+#
+# PX4 now ships inside the sim image (see infrastructure/Dockerfile.sim), so the
+# separate px4_sitl service this file used to declare is gone. It could never
+# have worked: it ran `make px4_sitl gazebo-classic` against an empty /px4 with
+# no source checked out, and gazebo-classic contradicts the Harmonic stack the
+# rest of the project targets.
+
+services:
+  simulation:
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile.sim
+    init: true
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      SIM_MODEL: ${SIM_MODEL:-x500}
+      SIM_WORLD: ${SIM_WORLD:-default}
+      PX4_HOME_LAT: ${PX4_HOME_LAT:-24.7136}
+      PX4_HOME_LON: ${PX4_HOME_LON:-46.6753}
+      PX4_HOME_ALT: ${PX4_HOME_ALT:-620.0}
+    # host networking keeps PX4's UDP links on the same loopback MAVSDK binds to.
+    network_mode: host
+    volumes:
+      # Custom worlds/models. Point SIM_WORLDS_PATH here to use them instead of
+      # the worlds PX4 ships with.
+      - ./gazebo:/simulation/gazebo

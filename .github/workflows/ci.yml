@@ -1,0 +1,338 @@
+name: CI — Lint · Type-check · Test · Build
+
+on:
+  push:
+    branches: [main, develop, "feat/**", "fix/**"]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Read-only by default; only the image job asks for more, and only off-PR.
+# Pull requests from forks get a read-only token and no secrets, so nothing in
+# the PR path may depend on either.
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "22"
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari-agents
+
+jobs:
+  # ── 1. Python lint + type-check ──────────────────────────────────────────────
+  python-lint:
+    name: Python Lint & Type Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      # Pinned — see requirements-lint.txt. Installing these unpinned made every
+      # upstream ruff release able to fail the build on unchanged code.
+      - name: Install lint deps
+        run: pip install -r requirements-lint.txt
+
+      - name: Ruff lint
+        run: ruff check . --output-format=github
+
+      - name: Public source export boundary tests
+        run: python -m unittest discover -s ../../tools
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+      # Non-blocking: `mypy .` currently cannot resolve modules in this tree
+      # (config/, services/ and pipelines/ are namespace packages, so settings.py
+      # is reachable as both `settings` and `config.settings`). Adding the
+      # missing __init__.py files fixes resolution but surfaces ~229 pre-existing
+      # type errors. Tracked separately; kept visible rather than deleted so the
+      # debt is not silently dropped.
+      # Blocking for the modules that decide what may run and what counts as
+      # evidence (flight bundle identity, mission sandbox, run ownership,
+      # acceptance). Widen this list as modules are cleaned up.
+      - name: MyPy (blocking, safety-critical modules)
+        run: >-
+          mypy --ignore-missing-imports --follow-imports=silent --explicit-package-bases
+          pipelines/flight_model.py pipelines/simulation_acceptance.py
+          pipelines/simulation_readiness.py services/run_lock.py
+          utils/mission_sandbox.py utils/mission_sandbox_entry.py
+          pipelines/propulsion_evidence.py pipelines/performance_solver.py
+          pipelines/request_requirements.py utils/mission_parser.py
+          pipelines/resolved_drone.py services/docker_sim.py pipelines/calibration.py
+          pipelines/flight_conformance.py services/vector_index.py
+
+      - name: MyPy type check (whole tree, non-blocking)
+        continue-on-error: true
+        run: mypy . --ignore-missing-imports --no-strict-optional
+
+  # ── 2. Python tests ──────────────────────────────────────────────────────────
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    needs: python-lint
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: drone
+          POSTGRES_PASSWORD: drone
+          POSTGRES_DB: droneprompt_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    defaults:
+      run:
+        working-directory: apps/api
+
+    # Job-level so every step that imports config.settings gets a complete
+    # environment. These were duplicated per-step, and the migrations step was
+    # missing API_SECRET_KEY — which has no default by design — so `alembic
+    # upgrade head` died constructing Settings and the test step never ran.
+    env:
+      DATABASE_URL: postgresql+asyncpg://drone:drone@localhost:5432/droneprompt_test
+      REDIS_URL: redis://localhost:6379/0
+      CELERY_BROKER_URL: redis://localhost:6379/1
+      OLLAMA_BASE_URL: http://localhost:11434   # not running — agents use stubs
+      API_SECRET_KEY: ci-test-secret-key-32-chars-minimum!!
+      DEBUG: "true"
+      ELJAZARI_REQUIRE_SANDBOX_TEST: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-ci.txt
+
+      # The mission sandbox test must run here, not skip: allow unprivileged
+      # user namespaces (Ubuntu 24.04 restricts them by default) and install
+      # MAVSDK, which the sandbox bootstrap imports.
+      - name: Enable the mission sandbox test
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          pip install mavsdk==3.10.1
+
+      - name: Run migrations (test DB)
+        run: alembic upgrade head
+
+      - name: Import optional manufacturer data locally
+        run: python -m scripts.bootstrap_components
+
+      - name: Run tests
+        run: |
+          pytest -v \
+            --tb=short \
+            --cov=. \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --junit-xml=test-results.xml \
+            -x
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-test-results
+          path: apps/api/test-results.xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: apps/api/coverage.xml
+          flags: backend
+          token: ${{ secrets.CODECOV_TOKEN }}
+          # Fork PRs have no token; coverage upload must not fail the build.
+          fail_ci_if_error: false
+
+  # ── 3. TypeScript lint + type-check ─────────────────────────────────────────
+  ts-lint:
+    name: TypeScript Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # From the lockfile, so CI tests what a clean clone installs.
+      - name: Install dependencies (workspace root)
+        run: npm ci --legacy-peer-deps
+
+      - name: Generate next-env.d.ts
+        run: touch next-env.d.ts
+        working-directory: apps/web
+
+      - name: ESLint
+        run: npm run lint
+        working-directory: apps/web
+
+      - name: TypeScript check
+        run: npx tsc --noEmit --skipLibCheck
+        working-directory: apps/web
+
+      - name: Run frontend tests
+        run: npm run test -w @eljazari/web
+
+  # ── 4. Docker build ──────────────────────────────────────────────────────────
+  docker-build:
+    name: Docker Build (${{ matrix.service.name }})
+    runs-on: ubuntu-latest
+    needs: [python-tests, ts-lint]
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - { name: api,    dockerfile: infrastructure/Dockerfile.api    }
+          - { name: web,    dockerfile: infrastructure/Dockerfile.web    }
+          - { name: celery, dockerfile: infrastructure/Dockerfile.celery }
+
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Fork PRs cannot log in (read-only token); they build without pushing.
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}/${{ matrix.service.name }}
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.service.dockerfile }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Scoped per service. type=gha defaults every build to the same scope,
+          # so these three matrix legs were overwriting one another's cache.
+          cache-from: type=gha,scope=${{ matrix.service.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service.name }}
+          platforms: linux/amd64
+
+  # ── 5. Docker build — sim (optional, complex Gazebo image) ───────────────────
+  # A successful image build is not a flight test: sitl.yml flies the generated
+  # aircraft on a runner with PX4, and release.yml requires that run.
+  docker-build-sim:
+    name: Docker Build (sim) [optional]
+    runs-on: ubuntu-latest
+    needs: [python-tests, ts-lint]
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}/sim
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/Dockerfile.sim
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # mode=min, unlike the other images: this build has a PX4 compile stage
+          # whose intermediate layers run to several GB. Exporting them would
+          # exhaust the repository's 10 GB Actions cache on its own and evict the
+          # api/web/celery entries. Only the final image layers are kept, so a
+          # cold PX4 build is traded for leaving the other jobs' caches intact.
+          cache-from: type=gha,scope=sim
+          cache-to: type=gha,mode=min,scope=sim
+          platforms: linux/amd64

@@ -1,0 +1,202 @@
+{
+  "title": "eljazari.ai — Operations Dashboard",
+  "uid": "eljazari-ops",
+  "tags": ["eljazari", "production"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-3h", "to": "now" },
+  "schemaVersion": 39,
+  "panels": [
+
+    {
+      "id": 1, "type": "stat", "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "title": "Simulation Success Rate (1h)",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "steps": [
+              { "color": "red",    "value": 0 },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "green",  "value": 0.85 }
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "rate(droneprompt_simulation_completed_total{result=\"pass\"}[1h]) / rate(droneprompt_simulation_completed_total[1h])",
+        "legendFormat": "Success Rate"
+      }]
+    },
+
+    {
+      "id": 2, "type": "stat", "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "title": "Avg Design Time (min)",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "steps": [
+              { "color": "green",  "value": 0 },
+              { "color": "yellow", "value": 30 },
+              { "color": "red",    "value": 120 }
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "histogram_quantile(0.50, rate(droneprompt_design_duration_seconds_bucket[1h]))",
+        "legendFormat": "p50 Design Time"
+      }]
+    },
+
+    {
+      "id": 3, "type": "stat", "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "title": "GPU Utilization",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "steps": [
+              { "color": "green",  "value": 0 },
+              { "color": "yellow", "value": 70 },
+              { "color": "red",    "value": 90 }
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "avg(DCGM_FI_DEV_GPU_UTIL)",
+        "legendFormat": "GPU %"
+      }]
+    },
+
+    {
+      "id": 4, "type": "stat", "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "title": "Active Simulations",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 3 },
+              { "color": "red",    "value": 5 }
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "celery_active_tasks{queue=\"simulation\"}",
+        "legendFormat": "Active"
+      }]
+    },
+
+    {
+      "id": 5, "type": "stat", "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "title": "LLM Token Usage (1h)",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [{
+        "expr": "increase(droneprompt_llm_tokens_total[1h])",
+        "legendFormat": "Tokens"
+      }]
+    },
+
+    {
+      "id": 6, "type": "stat", "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "title": "API Error Rate (5m)",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "steps": [
+              { "color": "green",  "value": 0 },
+              { "color": "yellow", "value": 0.01 },
+              { "color": "red",    "value": 0.05 }
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "rate(http_requests_total{job=\"droneprompt-api\",status=~\"5..\"}[5m]) / rate(http_requests_total{job=\"droneprompt-api\"}[5m])",
+        "legendFormat": "Error Rate"
+      }]
+    },
+
+    {
+      "id": 10, "type": "timeseries", "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "title": "Simulation Throughput & Success Rate",
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Success Rate" }, "properties": [{ "id": "unit", "value": "percentunit" }, { "id": "custom.axisPlacement", "value": "right" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "rate(droneprompt_simulation_completed_total[5m]) * 60", "legendFormat": "Completions/min" },
+        { "expr": "rate(droneprompt_simulation_completed_total{result=\"pass\"}[5m]) / rate(droneprompt_simulation_completed_total[5m])", "legendFormat": "Success Rate" }
+      ]
+    },
+
+    {
+      "id": 11, "type": "timeseries", "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "title": "API Latency Percentiles",
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"droneprompt-api\"}[5m]))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"droneprompt-api\"}[5m]))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"droneprompt-api\"}[5m]))", "legendFormat": "p99" }
+      ]
+    },
+
+    {
+      "id": 12, "type": "timeseries", "gridPos": { "x": 0, "y": 12, "w": 8, "h": 8 },
+      "title": "GPU Memory Usage",
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
+      "targets": [
+        { "expr": "DCGM_FI_DEV_FB_USED * 1024 * 1024", "legendFormat": "Used {{gpu}}" },
+        { "expr": "DCGM_FI_DEV_FB_TOTAL * 1024 * 1024", "legendFormat": "Total {{gpu}}" }
+      ]
+    },
+
+    {
+      "id": 13, "type": "timeseries", "gridPos": { "x": 8, "y": 12, "w": 8, "h": 8 },
+      "title": "LLM Token Consumption",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "rate(droneprompt_llm_tokens_total{model=~\"qwen.*\"}[5m]) * 60", "legendFormat": "Qwen tokens/min" },
+        { "expr": "rate(droneprompt_llm_tokens_total{model=~\"llama.*\"}[5m]) * 60", "legendFormat": "Llama tokens/min" }
+      ]
+    },
+
+    {
+      "id": 14, "type": "timeseries", "gridPos": { "x": 16, "y": 12, "w": 8, "h": 8 },
+      "title": "Celery Queue Depth",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "celery_queue_length{queue=\"simulation\"}", "legendFormat": "simulation" },
+        { "expr": "celery_queue_length{queue=\"default\"}", "legendFormat": "default" }
+      ]
+    },
+
+    {
+      "id": 20, "type": "timeseries", "gridPos": { "x": 0, "y": 20, "w": 12, "h": 6 },
+      "title": "Database Connections & Query Latency",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "pg_stat_database_numbackends{datname=\"droneprompt\"}", "legendFormat": "Active connections" },
+        { "expr": "rate(pg_stat_database_blks_hit{datname=\"droneprompt\"}[5m])", "legendFormat": "Cache hit rate" }
+      ]
+    },
+
+    {
+      "id": 21, "type": "timeseries", "gridPos": { "x": 12, "y": 20, "w": 12, "h": 6 },
+      "title": "Redis Memory & Hit Rate",
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "redis_memory_used_bytes", "legendFormat": "Memory used" },
+        { "expr": "rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m]))", "legendFormat": "Hit rate" }
+      ]
+    }
+  ]
+}

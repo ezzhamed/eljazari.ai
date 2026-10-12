@@ -1,0 +1,17 @@
+# Shell scripts and Dockerfiles are executed by Linux containers. With
+# core.autocrlf=true (the Windows default, and what this repo is developed on)
+# a checkout would rewrite them to CRLF, and the kernel would then fail to run
+# them at all: `/usr/bin/env: 'bash\r': No such file or directory`. Pin the
+# working-tree ending so the same file works on every platform.
+*.sh        text eol=lf
+Dockerfile* text eol=lf
+*.bash      text eol=lf
+# Propulsion source extracts are identified by the SHA-256 of their exact bytes
+# (motor.thrust_curve_evidence.source_sha256); line-ending conversion would
+# change the hash on Windows checkouts.
+data/components/evidence/** -text
+# Seccomp profiles are compared byte-for-byte with their pinned base (make_profile.py).
+infrastructure/seccomp/*.json -text
+# Benchmark runs record the SHA-256 of the prompt suite they used; line-ending
+# conversion on Windows checkouts would change it (docs/BENCHMARK.md).
+benchmarks/prompt_suite_*.json -text

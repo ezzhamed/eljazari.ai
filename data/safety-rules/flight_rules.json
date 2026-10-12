@@ -1,0 +1,201 @@
+{
+  "rules_version": "2.0",
+  "description": "eljazari.ai safety rules — machine-readable format for RAG compliance checker",
+  "compliance_rules": [
+    {
+      "id": "CR001",
+      "name": "no_infinite_loops",
+      "severity": "high",
+      "description": "Infinite loops without exit conditions are forbidden",
+      "forbidden_patterns": ["while True:", "while 1:"],
+      "required_patterns": [],
+      "suggestion": "Add a break/timeout condition to all while loops"
+    },
+    {
+      "id": "CR002",
+      "name": "no_direct_motor_commands",
+      "severity": "critical",
+      "description": "Direct motor/PWM commands bypass safety — use Skill APIs only",
+      "forbidden_patterns": [
+        "set_motor_speed",
+        "set_pwm",
+        "motor_command",
+        "actuator_control"
+      ],
+      "required_patterns": [],
+      "suggestion": "Use takeoff(), fly_to(), land() instead of direct motor control"
+    },
+    {
+      "id": "CR003",
+      "name": "no_hardcoded_credentials",
+      "severity": "critical",
+      "description": "Passwords, tokens, or API keys must not appear in flight code",
+      "forbidden_patterns": [
+        "password\\s*=\\s*['\"]",
+        "api_key\\s*=\\s*['\"]",
+        "secret\\s*=\\s*['\"]"
+      ],
+      "required_patterns": [],
+      "suggestion": "Use environment variables for credentials"
+    },
+    {
+      "id": "CR004",
+      "name": "no_shell_execution",
+      "severity": "critical",
+      "description": "Shell commands in flight code are a security violation",
+      "forbidden_patterns": [
+        "os\\.system",
+        "subprocess\\.call",
+        "subprocess\\.run",
+        "eval\\(",
+        "exec\\("
+      ],
+      "required_patterns": [],
+      "suggestion": "Remove all shell/eval/exec calls from flight code"
+    },
+    {
+      "id": "CR005",
+      "name": "async_main_function",
+      "severity": "high",
+      "description": "Mission entry point must be an async function",
+      "forbidden_patterns": [],
+      "required_patterns": ["async def (run|mission|main|fly)"],
+      "suggestion": "Define an async def run()/mission() as the mission entry point"
+    },
+    {
+      "id": "CR006",
+      "name": "battery_check_before_takeoff",
+      "severity": "medium",
+      "description": "Battery level should be checked before arming/takeoff",
+      "forbidden_patterns": [],
+      "required_patterns": ["get_battery|battery\\.remaining|check_pre_flight"],
+      "suggestion": "Add get_battery(system) check before takeoff and abort if < 50%"
+    },
+    {
+      "id": "CR007",
+      "name": "no_positive_z_fly_to",
+      "severity": "high",
+      "description": "In NED coordinates, positive z means underground. fly_to() z must be negative for above-ground flight",
+      "forbidden_patterns": [],
+      "required_patterns": [],
+      "suggestion": "Use negative z values in fly_to() for above-ground flight (NED: North+X, East+Y, Down+Z)"
+    },
+    {
+      "id": "CR008",
+      "name": "connection_string_parameterised",
+      "severity": "medium",
+      "description": "Connection string must be parameterised, not hardcoded",
+      "forbidden_patterns": ["connect\\(['\"]udp://:14540['\"]\\)"],
+      "required_patterns": [],
+      "suggestion": "Read connection string from environment: os.getenv('MAVLINK_CONNECTION', 'udp://:14540')"
+    },
+    {
+      "id": "CR009",
+      "name": "no_sleep_in_flight_loop",
+      "severity": "medium",
+      "description": "time.sleep() blocks the event loop — use asyncio.sleep() instead",
+      "forbidden_patterns": ["time\\.sleep\\("],
+      "required_patterns": [],
+      "suggestion": "Replace time.sleep(n) with await asyncio.sleep(n)"
+    },
+    {
+      "id": "CR010",
+      "name": "no_threading_in_flight_code",
+      "severity": "high",
+      "description": "Threading conflicts with MAVSDK async event loop",
+      "forbidden_patterns": ["import threading", "Thread\\("],
+      "required_patterns": [],
+      "suggestion": "Use asyncio.create_task() or asyncio.gather() instead of threads"
+    }
+  ],
+  "static_analysis_rules": [
+    {
+      "id": "SR001",
+      "name": "approved_functions_only",
+      "severity": "critical",
+      "description": "All function calls must be from approved Skill APIs",
+      "suggestion": "Replace with an approved Skill API function"
+    },
+    {
+      "id": "SR002",
+      "name": "landing_sequence_required",
+      "severity": "critical",
+      "description": "Code must contain land() or emergency_stop() call",
+      "suggestion": "Add land(system) or emergency_stop(system) at the end"
+    },
+    {
+      "id": "SR003",
+      "name": "error_handling_required",
+      "severity": "high",
+      "description": "All flight operations must be in try/except blocks",
+      "suggestion": "Wrap flight operations in try/except with safe landing fallback"
+    },
+    {
+      "id": "SR004",
+      "name": "altitude_bounds",
+      "severity": "high",
+      "description": "No commanded altitude above MAX_ALTITUDE_M or below 0",
+      "suggestion": "Keep altitude between 0 and MAX_ALTITUDE_M"
+    },
+    {
+      "id": "SR005",
+      "name": "speed_bounds",
+      "severity": "medium",
+      "description": "No commanded speed above MAX_SPEED_MS",
+      "suggestion": "Reduce speed to ≤ MAX_SPEED_MS"
+    }
+  ],
+  "reachability_rules": [
+    {
+      "id": "RR001",
+      "name": "battery_return_margin",
+      "severity": "critical",
+      "description": "Must have ≥30% battery margin for RTL from any waypoint",
+      "suggestion": "Reduce mission range or shorten path distance"
+    },
+    {
+      "id": "RR002",
+      "name": "geofence_compliance",
+      "severity": "critical",
+      "description": "All waypoints must be within defined geofence radius",
+      "suggestion": "Keep all waypoints within MAX_GEOFENCE_RADIUS_M of home"
+    },
+    {
+      "id": "RR003",
+      "name": "waypoint_altitude_max",
+      "severity": "high",
+      "description": "No waypoint altitude above MAX_ALTITUDE_M",
+      "suggestion": "Reduce waypoint altitude to ≤ MAX_ALTITUDE_M"
+    }
+  ],
+  "injection_protocols": [
+    {
+      "id": "IP001",
+      "name": "battery_monitor",
+      "description": "Async battery monitor — RTL when battery < 20%",
+      "inject_at": "after_connect",
+      "auto_inject": true
+    },
+    {
+      "id": "IP002",
+      "name": "connection_watchdog",
+      "description": "Monitor connection state — emergency_stop on disconnect",
+      "inject_at": "after_connect",
+      "auto_inject": true
+    },
+    {
+      "id": "IP003",
+      "name": "geofence_enforcer",
+      "description": "Monitor position — RTL when geofence is breached",
+      "inject_at": "before_takeoff",
+      "auto_inject": true
+    },
+    {
+      "id": "IP004",
+      "name": "emergency_handler",
+      "description": "SIGTERM/SIGINT handler — graceful emergency stop",
+      "inject_at": "global",
+      "auto_inject": true
+    }
+  ]
+}

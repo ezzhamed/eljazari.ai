@@ -1,0 +1,258 @@
+[
+  {
+    "part_number": "tmotor_f80_pro_1900kv",
+    "manufacturer": "T-Motor",
+    "model_name": "F80 Pro 1900KV",
+    "kv": 1900,
+    "weight_g": 30.0,
+    "max_continuous_current_a": 38.0,
+    "max_burst_current_a": 46.5,
+    "stator_diameter_mm": 23.0,
+    "stator_height_mm": 8.0,
+    "shaft_diameter_mm": 5.0,
+    "recommended_voltage_cells_s": [
+      4,
+      5,
+      6
+    ],
+    "thrust_curve": [
+      {
+        "throttle_pct": 25,
+        "rpm": 11500,
+        "thrust_g": 200,
+        "current_a": 2.3,
+        "power_w": 34.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 50,
+        "rpm": 17800,
+        "thrust_g": 520,
+        "current_a": 7.5,
+        "power_w": 111.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 75,
+        "rpm": 22400,
+        "thrust_g": 920,
+        "current_a": 16.8,
+        "power_w": 249.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 100,
+        "rpm": 25800,
+        "thrust_g": 1280,
+        "current_a": 31.0,
+        "power_w": 459.0,
+        "voltage_v": 14.8
+      }
+    ],
+    "price_usd": 26.99,
+    "url": "https://store.tmotor.com/product/f80-pro-motor-fpv.html"
+  },
+  {
+    "part_number": "tmotor_air_2207_1750kv",
+    "manufacturer": "T-Motor",
+    "model_name": "Air 2207 1750KV",
+    "kv": 1750,
+    "weight_g": 33.5,
+    "max_continuous_current_a": 32.0,
+    "max_burst_current_a": 40.0,
+    "stator_diameter_mm": 22.0,
+    "stator_height_mm": 7.0,
+    "shaft_diameter_mm": 5.0,
+    "recommended_voltage_cells_s": [
+      4,
+      6
+    ],
+    "thrust_curve": [
+      {
+        "throttle_pct": 25,
+        "rpm": 10800,
+        "thrust_g": 180,
+        "current_a": 2.1,
+        "power_w": 31.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 50,
+        "rpm": 16500,
+        "thrust_g": 475,
+        "current_a": 6.8,
+        "power_w": 101.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 75,
+        "rpm": 20900,
+        "thrust_g": 830,
+        "current_a": 15.2,
+        "power_w": 225.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 100,
+        "rpm": 24300,
+        "thrust_g": 1150,
+        "current_a": 28.5,
+        "power_w": 422.0,
+        "voltage_v": 14.8
+      }
+    ],
+    "price_usd": 22.99
+  },
+  {
+    "part_number": "emax_rs2306s_2400kv",
+    "manufacturer": "EMAX",
+    "model_name": "RS2306S 2400KV",
+    "kv": 2400,
+    "weight_g": 33.0,
+    "max_continuous_current_a": 35.0,
+    "max_burst_current_a": 42.0,
+    "stator_diameter_mm": 23.0,
+    "stator_height_mm": 6.0,
+    "shaft_diameter_mm": 5.0,
+    "recommended_voltage_cells_s": [
+      4
+    ],
+    "thrust_curve": [
+      {
+        "throttle_pct": 25,
+        "rpm": 12800,
+        "thrust_g": 220,
+        "current_a": 2.4,
+        "power_w": 35.5,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 50,
+        "rpm": 19200,
+        "thrust_g": 555,
+        "current_a": 8.1,
+        "power_w": 120.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 75,
+        "rpm": 24100,
+        "thrust_g": 960,
+        "current_a": 18.0,
+        "power_w": 266.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 100,
+        "rpm": 27500,
+        "thrust_g": 1320,
+        "current_a": 33.2,
+        "power_w": 492.0,
+        "voltage_v": 14.8
+      }
+    ],
+    "price_usd": 19.99
+  },
+  {
+    "part_number": "iflight_xing2_2207_1855kv",
+    "manufacturer": "iFlight",
+    "model_name": "XING2 2207 1855KV",
+    "kv": 1855,
+    "weight_g": 31.5,
+    "max_continuous_current_a": 35.0,
+    "max_burst_current_a": 42.0,
+    "stator_diameter_mm": 22.0,
+    "stator_height_mm": 7.0,
+    "shaft_diameter_mm": 5.0,
+    "recommended_voltage_cells_s": [
+      4,
+      6
+    ],
+    "thrust_curve": [
+      {
+        "throttle_pct": 25,
+        "rpm": 11200,
+        "thrust_g": 195,
+        "current_a": 2.2,
+        "power_w": 32.5,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 50,
+        "rpm": 17100,
+        "thrust_g": 505,
+        "current_a": 7.2,
+        "power_w": 106.5,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 75,
+        "rpm": 21700,
+        "thrust_g": 890,
+        "current_a": 16.0,
+        "power_w": 237.0,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 100,
+        "rpm": 25100,
+        "thrust_g": 1230,
+        "current_a": 30.0,
+        "power_w": 444.0,
+        "voltage_v": 14.8
+      }
+    ],
+    "price_usd": 23.99
+  },
+  {
+    "part_number": "happymodel_ex1404_3000kv",
+    "manufacturer": "HappyModel",
+    "model_name": "EX1404 3000KV (micro)",
+    "kv": 3000,
+    "weight_g": 7.5,
+    "max_continuous_current_a": 11.0,
+    "max_burst_current_a": 14.0,
+    "stator_diameter_mm": 14.0,
+    "stator_height_mm": 4.0,
+    "shaft_diameter_mm": 1.5,
+    "recommended_voltage_cells_s": [
+      3,
+      4
+    ],
+    "thrust_curve": [
+      {
+        "throttle_pct": 25,
+        "rpm": 16500,
+        "thrust_g": 42,
+        "current_a": 0.6,
+        "power_w": 8.9,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 50,
+        "rpm": 24800,
+        "thrust_g": 115,
+        "current_a": 2.0,
+        "power_w": 29.6,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 75,
+        "rpm": 31000,
+        "thrust_g": 205,
+        "current_a": 4.5,
+        "power_w": 66.6,
+        "voltage_v": 14.8
+      },
+      {
+        "throttle_pct": 100,
+        "rpm": 35800,
+        "thrust_g": 290,
+        "current_a": 9.8,
+        "power_w": 145.0,
+        "voltage_v": 14.8
+      }
+    ],
+    "price_usd": 14.99
+  }
+]

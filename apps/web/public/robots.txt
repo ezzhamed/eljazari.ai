@@ -1,0 +1,7 @@
+# eljazari.ai — AI Drone Agent Platform
+# https://eljazari.ai
+
+User-agent: *
+Allow: /
+
+Sitemap: https://eljazari.ai/sitemap.xml

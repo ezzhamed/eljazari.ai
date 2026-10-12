@@ -1,0 +1,15 @@
+# Lint and type-check tooling, pinned.
+#
+# These versions must be pinned. `ruff format` output changes between minor
+# releases, so an unpinned install turns every upstream release into a red
+# build on an unchanged codebase — which is exactly what happened: the tree was
+# formatted with ruff 0.9.x and started failing `ruff format --check` when CI
+# picked up a newer release.
+#
+# Bump deliberately: raise the pin, run `ruff format .`, and commit the
+# reformatting together with the bump.
+
+ruff==0.16.0
+mypy==2.3.0
+types-PyYAML==6.0.12.20250915
+types-redis==4.6.0.20241004

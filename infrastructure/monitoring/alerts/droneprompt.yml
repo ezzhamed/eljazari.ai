@@ -1,0 +1,94 @@
+groups:
+  - name: droneprompt.api
+    interval: 30s
+    rules:
+      - alert: APIHighErrorRate
+        expr: |
+          rate(http_requests_total{job="droneprompt-api",status=~"5.."}[5m])
+          / rate(http_requests_total{job="droneprompt-api"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API error rate > 5% for 2 minutes"
+          description: "Current rate: {{ $value | humanizePercentage }}"
+
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job="droneprompt-api"}[5m])
+          ) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency > 2s"
+          description: "p95: {{ $value | humanizeDuration }}"
+
+      - alert: APIPodDown
+        expr: up{job="droneprompt-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API pod is down"
+
+  - name: droneprompt.simulation
+    interval: 30s
+    rules:
+      - alert: SimulationQueueBacklog
+        expr: celery_queue_length{queue="simulation"} > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Simulation queue backlog > 20 tasks"
+          description: "Current queue length: {{ $value }}"
+
+      - alert: SimulationSuccessRateLow
+        expr: |
+          rate(droneprompt_simulation_completed_total{result="pass"}[1h])
+          / rate(droneprompt_simulation_completed_total[1h]) < 0.70
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Simulation success rate < 70% in last hour"
+
+  - name: droneprompt.infrastructure
+    interval: 60s
+    rules:
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} /
+           node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk space < 15% available"
+          description: "Available: {{ $value | humanizePercentage }}"
+
+      - alert: GPUMemoryHigh
+        expr: DCGM_FI_DEV_FB_USED / DCGM_FI_DEV_FB_TOTAL > 0.90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU memory usage > 90%"

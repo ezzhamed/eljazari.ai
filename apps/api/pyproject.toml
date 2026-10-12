@@ -1,0 +1,38 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [
+    ".git",
+    "__pycache__",
+    "alembic/versions",
+    ".venv",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E402",   # module level import not at top (we have conditional imports)
+    "I001",   # import block unsorted (auto-sortable but noisy in CI)
+    "W291",   # trailing whitespace
+    "W293",   # whitespace before ':'
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F811"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agents", "config", "db", "graph", "middleware", "models", "pipelines", "repositories", "routers", "schemas", "services", "tasks", "utils", "ws"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+no_strict_optional = true
+warn_return_any = false
+warn_unused_ignores = false

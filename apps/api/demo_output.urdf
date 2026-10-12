@@ -1,0 +1,434 @@
+<?xml version="1.0" ?>
+<robot name="quadcopter">
+  <link name="base_link">
+    <inertial>
+      <mass value="0.150000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00009011" ixy="0.00000000" ixz="0.00000000" iyy="0.00017111" iyz="0.00000000" izz="0.00021060"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.1080 0.0720 0.0450"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.1080 0.0720 0.0450"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_0">
+    <inertial>
+      <mass value="0.048255"/>
+      <origin xyz="0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -0.7854"/>
+      <inertia ixx="0.00009125" ixy="0.00000000" ixz="0.00000000" iyy="0.00009125" iyz="0.00000000" izz="0.00000154"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -0.7854"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -0.7854"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_1">
+    <inertial>
+      <mass value="0.048255"/>
+      <origin xyz="0.0530 0.0530 0.0000" rpy="0.0000 0.0000 0.7854"/>
+      <inertia ixx="0.00009125" ixy="0.00000000" ixz="0.00000000" iyy="0.00009125" iyz="0.00000000" izz="0.00000154"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0530 0.0530 0.0000" rpy="0.0000 0.0000 0.7854"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0530 0.0530 0.0000" rpy="0.0000 0.0000 0.7854"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_2">
+    <inertial>
+      <mass value="0.048255"/>
+      <origin xyz="-0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -2.3562"/>
+      <inertia ixx="0.00009125" ixy="0.00000000" ixz="0.00000000" iyy="0.00009125" iyz="0.00000000" izz="0.00000154"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -2.3562"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0530 -0.0530 0.0000" rpy="0.0000 0.0000 -2.3562"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_3">
+    <inertial>
+      <mass value="0.048255"/>
+      <origin xyz="-0.0530 0.0530 0.0000" rpy="0.0000 0.0000 2.3562"/>
+      <inertia ixx="0.00009125" ixy="0.00000000" ixz="0.00000000" iyy="0.00009125" iyz="0.00000000" izz="0.00000154"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.0530 0.0530 0.0000" rpy="0.0000 0.0000 2.3562"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0530 0.0530 0.0000" rpy="0.0000 0.0000 2.3562"/>
+      <geometry>
+        <cylinder radius="0.0080" length="0.1500"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="motor_0">
+    <inertial>
+      <mass value="0.055000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000556" ixy="0.00000000" ixz="0.00000000" iyy="0.00000556" iyz="0.00000000" izz="0.00000539"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="prop_0">
+    <inertial>
+      <mass value="0.012000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00001259" ixy="0.00000000" ixz="0.00000000" iyy="0.00001259" iyz="0.00000000" izz="0.00002517"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="motor_1">
+    <inertial>
+      <mass value="0.055000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000556" ixy="0.00000000" ixz="0.00000000" iyy="0.00000556" iyz="0.00000000" izz="0.00000539"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="prop_1">
+    <inertial>
+      <mass value="0.012000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00001259" ixy="0.00000000" ixz="0.00000000" iyy="0.00001259" iyz="0.00000000" izz="0.00002517"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="motor_2">
+    <inertial>
+      <mass value="0.055000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000556" ixy="0.00000000" ixz="0.00000000" iyy="0.00000556" iyz="0.00000000" izz="0.00000539"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="prop_2">
+    <inertial>
+      <mass value="0.012000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00001259" ixy="0.00000000" ixz="0.00000000" iyy="0.00001259" iyz="0.00000000" izz="0.00002517"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="motor_3">
+    <inertial>
+      <mass value="0.055000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000556" ixy="0.00000000" ixz="0.00000000" iyy="0.00000556" iyz="0.00000000" izz="0.00000539"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0140" length="0.0250"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="prop_3">
+    <inertial>
+      <mass value="0.012000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00001259" ixy="0.00000000" ixz="0.00000000" iyy="0.00001259" iyz="0.00000000" izz="0.00002517"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <cylinder radius="0.0648" length="0.0030"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="battery">
+    <inertial>
+      <mass value="0.220000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00003896" ixy="0.00000000" ixz="0.00000000" iyy="0.00010633" iyz="0.00000000" izz="0.00011229"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0700 0.0350 0.0300"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0700 0.0350 0.0300"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="camera">
+    <inertial>
+      <mass value="0.030000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000200" ixy="0.00000000" ixz="0.00000000" iyy="0.00000200" iyz="0.00000000" izz="0.00000200"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0200 0.0200 0.0200"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0200 0.0200 0.0200"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="flight_controller">
+    <inertial>
+      <mass value="0.015000"/>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <inertia ixx="0.00000165" ixy="0.00000000" ixz="0.00000000" iyy="0.00000165" iyz="0.00000000" izz="0.00000324"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0360 0.0360 0.0050"/>
+      </geometry>
+      <material name="carbon_fiber">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+      <geometry>
+        <box size="0.0360 0.0360 0.0050"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="arm_0_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_0"/>
+    <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="arm_1_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_1"/>
+    <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="arm_2_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_2"/>
+    <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="arm_3_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_3"/>
+    <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="motor_0_mount" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_0"/>
+    <origin xyz="0.1061 -0.1061 0.0200" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="prop_0_joint" type="continuous">
+    <parent link="motor_0"/>
+    <child link="prop_0"/>
+    <origin xyz="0.0000 0.0000 0.0150" rpy="0.0000 0.0000 0.0000"/>
+    <axis xyz="0.0 0.0 1.0"/>
+  </joint>
+  <joint name="motor_1_mount" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_1"/>
+    <origin xyz="0.1061 0.1061 0.0200" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="prop_1_joint" type="continuous">
+    <parent link="motor_1"/>
+    <child link="prop_1"/>
+    <origin xyz="0.0000 0.0000 0.0150" rpy="0.0000 0.0000 0.0000"/>
+    <axis xyz="0.0 0.0 -1.0"/>
+  </joint>
+  <joint name="motor_2_mount" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_2"/>
+    <origin xyz="-0.1061 -0.1061 0.0200" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="prop_2_joint" type="continuous">
+    <parent link="motor_2"/>
+    <child link="prop_2"/>
+    <origin xyz="0.0000 0.0000 0.0150" rpy="0.0000 0.0000 0.0000"/>
+    <axis xyz="0.0 0.0 1.0"/>
+  </joint>
+  <joint name="motor_3_mount" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_3"/>
+    <origin xyz="-0.1061 0.1061 0.0200" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="prop_3_joint" type="continuous">
+    <parent link="motor_3"/>
+    <child link="prop_3"/>
+    <origin xyz="0.0000 0.0000 0.0150" rpy="0.0000 0.0000 0.0000"/>
+    <axis xyz="0.0 0.0 -1.0"/>
+  </joint>
+  <joint name="battery_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="battery"/>
+    <origin xyz="0.0000 0.0000 0.0375" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera"/>
+    <origin xyz="0.0540 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+  <joint name="flight_controller_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="flight_controller"/>
+    <origin xyz="0.0000 0.0000 0.0000" rpy="0.0000 0.0000 0.0000"/>
+  </joint>
+</robot>

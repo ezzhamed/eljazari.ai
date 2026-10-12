@@ -1,0 +1,218 @@
+# eljazari.ai — Safety Rules Database v2.0
+# Cross-Layer Supervision + Reachability + Compliance
+# Used by: SafeLLMSupervisionLayer (Pillar 1, 2, 3)
+
+rules_version: "2.0"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pillar 1 — Static AST Analysis Rules
+# ─────────────────────────────────────────────────────────────────────────────
+static_analysis_rules:
+
+  - id: SR001
+    name: approved_functions_only
+    severity: critical
+    description: "All function calls must be from approved Skill APIs"
+    check: ast_function_whitelist
+    suggestion: "Replace with an approved Skill API function"
+
+  - id: SR002
+    name: landing_sequence_required
+    severity: critical
+    description: "Code must contain land() or emergency_stop() call"
+    check: ast_contains_landing
+    suggestion: "Add land(system) or emergency_stop(system) at the end of the mission"
+
+  - id: SR003
+    name: error_handling_required
+    severity: high
+    description: "All flight operations must be in try/except blocks"
+    check: ast_exception_coverage
+    suggestion: "Wrap flight operations in try/except with safe landing fallback"
+
+  - id: SR004
+    name: altitude_bounds
+    severity: high
+    description: "No commanded altitude above MAX_ALTITUDE_M or below 0"
+    check: ast_altitude_range
+    suggestion: "Keep altitude between 0 and MAX_ALTITUDE_M"
+
+  - id: SR005
+    name: speed_bounds
+    severity: medium
+    description: "No commanded speed above MAX_SPEED_MS"
+    check: ast_speed_range
+    suggestion: "Reduce speed to ≤ MAX_SPEED_MS"
+
+  - id: SR006
+    name: async_await_required
+    severity: high
+    description: "MAVSDK calls must use async/await"
+    check: ast_await_coverage
+    suggestion: "Use async def and await for all MAVSDK calls"
+
+  - id: SR007
+    name: preflight_check_required
+    severity: medium
+    description: "check_pre_flight() must be called before takeoff"
+    check: ast_contains_preflight
+    suggestion: "Add check_pre_flight(system) before takeoff()"
+    auto_fixable: true
+
+  - id: SR008
+    name: connection_setup_required
+    severity: high
+    description: "Drone connection must be established before any flight command"
+    check: ast_contains_connection
+    suggestion: "Add System() and await drone.connect() at the start"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pillar 2 — Reachability Rules
+# ─────────────────────────────────────────────────────────────────────────────
+reachability_rules:
+
+  - id: RR001
+    name: battery_return_margin
+    severity: critical
+    description: "Must have ≥30% battery margin for RTL from any waypoint"
+    suggestion: "Reduce mission range or shorten path distance"
+
+  - id: RR002
+    name: geofence_compliance
+    severity: critical
+    description: "All waypoints must be within defined geofence radius"
+    suggestion: "Keep all waypoints within MAX_GEOFENCE_RADIUS_M of home"
+
+  - id: RR003
+    name: waypoint_altitude_max
+    severity: high
+    description: "No waypoint altitude above MAX_ALTITUDE_M"
+    suggestion: "Reduce waypoint altitude to ≤ MAX_ALTITUDE_M"
+
+  - id: RR004
+    name: waypoint_altitude_min
+    severity: high
+    description: "No waypoint altitude below MIN_ALTITUDE_M (except landing)"
+    suggestion: "Increase altitude to ≥ MIN_ALTITUDE_M"
+
+  - id: RR005
+    name: waypoint_speed_max
+    severity: medium
+    description: "Waypoint approach speed must not exceed MAX_SPEED_MS"
+    suggestion: "Reduce speed parameter in fly_to() calls"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pillar 3 — Compliance Rules (RAG pattern-matching)
+# ─────────────────────────────────────────────────────────────────────────────
+compliance_rules:
+
+  - id: CR001
+    name: no_infinite_loops
+    severity: high
+    description: "Infinite loops without exit conditions are forbidden"
+    forbidden_patterns:
+      - "while True:"
+      - "while 1:"
+    required_patterns: []
+    suggestion: "Add a break/timeout condition to all while loops"
+
+  - id: CR002
+    name: no_direct_motor_commands
+    severity: critical
+    description: "Direct motor/PWM commands bypass safety — use Skill APIs only"
+    forbidden_patterns:
+      - "set_motor_speed"
+      - "set_pwm"
+      - "motor_command"
+      - "actuator_control"
+    required_patterns: []
+    suggestion: "Use takeoff(), fly_to(), land() instead of direct motor control"
+
+  - id: CR003
+    name: no_hardcoded_credentials
+    severity: critical
+    description: "Passwords, tokens, or API keys must not appear in flight code"
+    forbidden_patterns:
+      - "password\\s*=\\s*['\"]"
+      - "api_key\\s*=\\s*['\"]"
+      - "secret\\s*=\\s*['\"]"
+    required_patterns: []
+    suggestion: "Use environment variables for credentials"
+
+  - id: CR004
+    name: no_shell_execution
+    severity: critical
+    description: "Shell commands in flight code are a security violation"
+    forbidden_patterns:
+      - "os\\.system"
+      - "subprocess\\.call"
+      - "subprocess\\.run"
+      - "eval\\("
+      - "exec\\("
+    required_patterns: []
+    suggestion: "Remove all shell/eval/exec calls from flight code"
+
+  - id: CR005
+    name: async_main_function
+    severity: high
+    description: "Mission entry point must be an async function"
+    forbidden_patterns: []
+    required_patterns:
+      - "async def (run|mission|main|fly)"
+    suggestion: "Define an async def run()/mission() as the mission entry point"
+
+  - id: CR006
+    name: battery_check_before_takeoff
+    severity: medium
+    description: "Battery level should be checked before arming/takeoff"
+    forbidden_patterns: []
+    required_patterns:
+      - "get_battery|battery\\.remaining|check_pre_flight"
+    suggestion: "Add get_battery(system) check before takeoff and abort if < 50%"
+
+  - id: CR007
+    name: no_negative_z_in_fly_to
+    severity: high
+    description: "fly_to() z-axis: negative = up (NED). Positive z means underground"
+    forbidden_patterns:
+      - "fly_to\\([^)]*,\\s*[0-9]+\\.[0-9]+\\s*\\)"
+    required_patterns: []
+    suggestion: "Use negative z values in fly_to() for above-ground flight (NED coords)"
+
+  - id: CR008
+    name: connection_string_required
+    severity: medium
+    description: "Connection string must be parameterised, not hardcoded IP"
+    forbidden_patterns:
+      - "connect\\(['\"]udp://:14540['\"]\\)"
+    required_patterns: []
+    suggestion: "Read connection string from environment: os.getenv('MAVLINK_CONNECTION')"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Injection Protocol Manifest
+# ─────────────────────────────────────────────────────────────────────────────
+injection_protocols:
+
+  - id: IP001
+    name: battery_monitor
+    inject_at: after_connect
+    severity_trigger: always
+    description: "Async battery monitor — RTL when battery < 20%"
+
+  - id: IP002
+    name: connection_watchdog
+    inject_at: after_connect
+    severity_trigger: always
+    description: "Monitor connection state — emergency_stop on disconnect"
+
+  - id: IP003
+    name: geofence_enforcer
+    inject_at: before_takeoff
+    severity_trigger: always
+    description: "Monitor position — RTL when geofence is breached"
+
+  - id: IP004
+    name: emergency_handler
+    inject_at: global
+    severity_trigger: always
+    description: "SIGTERM/SIGINT handler — graceful emergency stop"

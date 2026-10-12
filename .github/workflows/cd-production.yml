@@ -1,0 +1,147 @@
+name: CD — Deploy to Production
+
+on:
+  # Manual trigger with required approval
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (e.g. sha-abc1234)"
+        required: true
+        type: string
+      confirm:
+        description: "Type DEPLOY to confirm production deployment"
+        required: true
+        type: string
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false   # never cancel a running production deploy
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/eljazari-agents
+  K8S_NAMESPACE: eljazari
+
+jobs:
+  # ── Gate: confirm input ────────────────────────────────────────────────────
+  gate:
+    name: Deployment Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DEPLOY" ]; then
+            echo "❌ Confirmation input must be exactly 'DEPLOY'"
+            exit 1
+          fi
+          echo "✅ Confirmation accepted — deploying ${{ github.event.inputs.image_tag }}"
+
+  # ── Deploy ─────────────────────────────────────────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: gate
+    environment:
+      name: production
+      url: https://eljazari.ai
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.31.0"
+
+      - name: Configure kubeconfig (production)
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+
+      - name: Create deployment annotation
+        run: |
+          kubectl annotate deployment/api \
+            kubernetes.io/change-cause="Deploy ${{ env.IMAGE_TAG }} by ${{ github.actor }} at $(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -n ${{ env.K8S_NAMESPACE }} --overwrite
+
+      - name: Run DB migrations (with backup trigger)
+        run: |
+          echo "Triggering pre-deploy DB backup..."
+          kubectl create job db-backup-${{ env.IMAGE_TAG }} \
+            --from=cronjob/db-backup \
+            -n ${{ env.K8S_NAMESPACE }} || echo "Backup job not found, skipping"
+
+          echo "Running migrations..."
+          kubectl run db-migrate-${{ env.IMAGE_TAG }} \
+            --image=${{ env.IMAGE_PREFIX }}/api:${{ env.IMAGE_TAG }} \
+            --namespace=${{ env.K8S_NAMESPACE }} \
+            --restart=Never \
+            --command -- alembic upgrade head \
+            --env="DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" \
+            --wait \
+            --timeout=300s
+          kubectl logs db-migrate-${{ env.IMAGE_TAG }} -n ${{ env.K8S_NAMESPACE }}
+          kubectl delete pod db-migrate-${{ env.IMAGE_TAG }} -n ${{ env.K8S_NAMESPACE }}
+
+      - name: Rolling deployment — API
+        run: |
+          kubectl set image deployment/api \
+            api=${{ env.IMAGE_PREFIX }}/api:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/api -n ${{ env.K8S_NAMESPACE }} --timeout=10m
+
+      - name: Rolling deployment — Web
+        run: |
+          kubectl set image deployment/web \
+            web=${{ env.IMAGE_PREFIX }}/web:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/web -n ${{ env.K8S_NAMESPACE }} --timeout=10m
+
+      - name: Rolling deployment — Celery
+        run: |
+          kubectl set image deployment/celery-worker \
+            celery-worker=${{ env.IMAGE_PREFIX }}/celery:${{ env.IMAGE_TAG }} \
+            -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/celery-worker -n ${{ env.K8S_NAMESPACE }} --timeout=10m
+
+      - name: Production smoke tests
+        run: |
+          PROD_URL="https://api.eljazari.ai"
+          echo "--- Health check ---"
+          curl -sf "$PROD_URL/health" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          assert data.get('status') == 'ok', f'FAILED: {data}'
+          print('PASS:', data)
+          "
+          echo "--- API version ---"
+          curl -sf "$PROD_URL/api/version"
+          echo ""
+          echo "--- Frontend ---"
+          curl -sf "https://eljazari.ai/" | grep -q "eljazari" && echo "PASS: frontend reachable"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Production deployment failed — initiating rollback"
+          kubectl rollout undo deployment/api -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout undo deployment/web -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout undo deployment/celery-worker -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/api -n ${{ env.K8S_NAMESPACE }} --timeout=5m
+          echo "✅ Rollback complete"
+
+      - name: Tag release on success
+        if: success()
+        run: |
+          gh release create "prod-${{ env.IMAGE_TAG }}" \
+            --title "Production deploy: ${{ env.IMAGE_TAG }}" \
+            --notes "Deployed by ${{ github.actor }} on $(date -u +%Y-%m-%d)" \
+            --latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -69,6 +69,20 @@ MOTORS = {
     "MN4014 KV330": "tmotor_mn4014_330kv",
     "MN4014 KV400": "tmotor_mn4014_400kv",
 }
+# Each motor's default curve (propeller, test voltage), as documented in
+# docs/PROPULSION_EVIDENCE.md and used by the tests and benchmarks. A clean import
+# has no previous declaration to keep, and falling back to "highest voltage, then
+# part number" picked 15*5 instead of 13*4.4 for the MN3508 KV380.
+DEFAULT_DECLARATIONS = {
+    "tmotor_mn3508_380kv": ("tmotor_p13_44", 22.2),
+    "tmotor_mn3508_580kv": ("tmotor_p14_48", 14.8),
+    "tmotor_mn3508_700kv": ("tmotor_p12_4", 14.8),
+    "tmotor_mn3110_470kv": ("tmotor_p15_5", 14.8),
+    "tmotor_mn3110_700kv": ("tmotor_p12_4", 14.8),
+    "tmotor_mn3110_780kv": ("tmotor_p12_4", 11.1),
+    "tmotor_mn4014_330kv": ("tmotor_p17_58", 22.2),
+    "tmotor_mn4014_400kv": ("tmotor_p16_54", 22.2),
+}
 # Diameter*pitch in the Prop cell (all T-MOTOR carbon-fibre, two-blade) → catalog part.
 # Only propellers with a published specification page: the 9*3, 10*3.3 and 11*3.7
 # rows stay in the extracts but cannot become catalog test cases without a
@@ -396,6 +410,32 @@ def _format_entries(entries: list[dict[str, Any]]) -> str:
     return "\n".join(out) + "\n"
 
 
+def default_test(part: str, own: list[dict], current: dict) -> dict:
+    """The motor's default curve among its tests.
+
+    The existing sourced declaration if it is still a test, else the documented
+    default, else the highest-voltage test. A matching combination test replaces
+    it at selection time anyway.
+    """
+
+    def find(propeller: str | None, voltage: float | None) -> dict | None:
+        return next(
+            (
+                t
+                for t in own
+                if t["propeller_part_number"] == propeller and t["test_voltage_v"] == voltage
+            ),
+            None,
+        )
+
+    pinned = DEFAULT_DECLARATIONS.get(part, (None, None))
+    return (
+        find(current.get("propeller_part_number"), current.get("test_voltage_v"))
+        or find(*pinned)
+        or max(own, key=lambda t: (t["test_voltage_v"], t["propeller_part_number"]))
+    )
+
+
 def write_catalog() -> None:
     tests = json.loads(TESTS_PATH.read_text(encoding="utf-8"))["tests"]
     specs: dict[str, dict[str, str]] = {}
@@ -412,18 +452,8 @@ def write_catalog() -> None:
         own = [t for t in tests if t["motor_part_number"] == part]
         if not own:
             continue
-        # The default curve: the existing sourced one if it is still a test, else
-        # the highest-voltage test. A matching combination test replaces it anyway.
         current = (by_part.get(part) or {}).get("thrust_curve_evidence") or {}
-        default = next(
-            (
-                t
-                for t in own
-                if t["propeller_part_number"] == current.get("propeller_part_number")
-                and t["test_voltage_v"] == current.get("test_voltage_v")
-            ),
-            max(own, key=lambda t: (t["test_voltage_v"], t["propeller_part_number"])),
-        )
+        default = default_test(part, own, current)
         entry = catalog_motor(item, specs[item], default)
         entry["url"] = urls[item]
         if part in by_part:

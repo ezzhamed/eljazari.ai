@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A clean manufacturer-data import now gives each motor its documented default curve. With no earlier declaration to keep, the importer fell back to the highest-voltage test by part number and declared the MN3508 KV380 with the 15*5 propeller instead of 13*4.4, so a fresh clone (and CI) failed `test_bundled_declaration_matches_only_its_own_test_condition`.
+- `source-map-js` 1.2.2 in the lockfile (GHSA-68fv-2mgg-jv7q, high), which failed the production npm audit.
+
 ## [0.1.0-alpha.1] — first public release
 
 The first public, experimental release. Results are software-in-the-loop simulation only; see the README's scope.

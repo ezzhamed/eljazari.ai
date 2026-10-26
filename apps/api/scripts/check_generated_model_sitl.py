@@ -277,6 +277,8 @@ async def fly(
         "mission_error": result["mission_error"],
         "crash_detected": result["crash_detected"],
         "mission_isolation": result["mission_isolation"],
+        # How close each telemetry stream came to its staleness limit.
+        "stream_max_age_s": result.get("stream_max_age_s"),
         "hover": hover_metrics(result["telemetry"], altitude_m),
         "px4_ulog": ulog,
         "acceptance": assess_simulation(state),

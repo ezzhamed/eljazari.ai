@@ -151,6 +151,30 @@ def test_a_flight_that_does_not_land_where_it_should_fails():
     assert "Landed 2.0 m from home" in _reasons(displaced, code)
 
 
+def test_a_landed_vehicle_must_end_disarmed():
+    code = mission_code(altitude_m=5.0, hold_s=2.0)
+    points = flown_mission(altitude_m=5.0, hold_s=2.0)
+    result = assess_flight_conformance(points, code)
+    assert result["passed"] and result["metrics"]["disarmed_after_landing"] is True
+    still_armed = [*points[:-1], {**points[-1], "armed": True}]
+    reasons = _reasons(still_armed, code)
+    assert "Still armed 2.3 s after touchdown" in reasons
+    # Runners before 2026-10-26 wrote no real value: no evidence is not a pass.
+    unrecorded = [{k: v for k, v in p.items() if k != "armed"} for p in points]
+    assert "does not show whether the vehicle disarmed" in _reasons(unrecorded, code)
+
+
+def test_the_battery_must_keep_the_flight_rules_reserve():
+    code = mission_code(altitude_m=5.0, hold_s=2.0)
+    points = [{**p, "battery_percent": 50.0} for p in flown_mission(altitude_m=5.0, hold_s=2.0)]
+    result = assess_flight_conformance(points, code)
+    assert result["passed"] and result["metrics"]["min_battery_percent"] == 50.0
+    drained = [{**p, "battery_percent": 20.0} if i > 60 else p for i, p in enumerate(points)]
+    result = assess_flight_conformance(drained, code)
+    assert "Battery fell to 20%" in " ".join(result["reasons"])
+    assert result["retryable_with_code_change"] is False
+
+
 def test_leaving_the_codes_geofence_fails():
     spec = MissionPlanSpec(
         home=PX4_SITL_DEFAULT_HOME,
@@ -215,3 +239,16 @@ def test_the_gate_compares_the_flight_with_its_mission():
     # A run that already failed the basic checks is not also judged on its path.
     crashed = assess_simulation(good_state(crash_detected=True))
     assert crashed["flight_conformance"]["evaluated"] is False
+
+
+def test_a_sample_with_a_stale_stream_rejects_the_record():
+    """The runner names a stream older than its limit; the record is not evidence."""
+    state = good_state()
+    points = list(state["telemetry_data"])
+    points[40] = {**points[40], "stale_streams": {"attitude_euler": 2.4, "battery": 1.6}}
+    verdict = assess_simulation({**state, "telemetry_data": points})
+    reasons = " | ".join(verdict["reasons"])
+    assert not verdict["passed"]
+    assert "Telemetry stream attitude_euler was 2.4 s old" in reasons
+    assert verdict["retryable_with_code_change"] is False
+    assert verdict["flight_conformance"]["evaluated"] is False

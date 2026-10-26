@@ -84,6 +84,17 @@ def assess_simulation(state: Mapping[str, Any]) -> dict[str, Any]:
                 reasons.append("Telemetry contains non-finite numeric values")
                 retryable = telemetry_valid = False
                 break
+            stale = point.get("stale_streams")
+            if stale:
+                # The runner names every stream older than its limit at this sample.
+                name, age_s = max(stale.items(), key=lambda item: item[1])
+                reasons.append(
+                    f"Telemetry stream {name} was {age_s:g} s old at "
+                    f"{point['timestamp_s']:.1f} s, so the record repeats values the vehicle "
+                    "may no longer have had"
+                )
+                retryable = telemetry_valid = False
+                break
             timestamp = point["timestamp_s"]
             if timestamp < 0 or timestamp <= previous:
                 reasons.append("Telemetry timestamps must be non-negative and strictly increasing")

@@ -18,10 +18,16 @@ gps      ``param set EKF2_GPS_CTRL 0``: the estimator stops fusing GPS. The
 link     ``mavlink stop-all``: the vehicle's MAVLink link to the runner ends
 px4      SIGKILL of the PX4 daemon
 geofence the code's geofence (10 m) is smaller than its square (20 m)
+stream   ``mavlink stream -r 0`` for ATTITUDE and ATTITUDE_QUATERNION on the
+         runner's link (14580): position stays live while attitude goes stale
+disarm   ``param set COM_DISARM_LAND -1``: PX4 no longer disarms after landing
+reserve  ``param set SIM_BAT_MIN_PCT 25``: the simulated battery, which drains
+         to 50% and holds, keeps draining to 25%, above every PX4 failsafe
 ======== ===================================================================
 
 A scenario passes when the gate rejects the run with at least one reason and no
-Gazebo or PX4 process is left. Run from apps/api, for example:
+Gazebo or PX4 process is left. The last three exist to prove one check each, so
+they also need their own reason among the gate's. Run from apps/api, for example:
 
     python scripts/check_sitl_faults.py --scenario motor --scenario battery
 """
@@ -56,6 +62,18 @@ SCENARIOS: dict[str, list[tuple[str, ...]]] = {
     "link": [("mavlink", "stop-all")],
     "px4": [("kill",)],
     "geofence": [],
+    "stream": [
+        ("mavlink", "stream", "-u", "14580", "-s", "ATTITUDE", "-r", "0"),
+        ("mavlink", "stream", "-u", "14580", "-s", "ATTITUDE_QUATERNION", "-r", "0"),
+    ],
+    "disarm": [("param", "set", "COM_DISARM_LAND", "-1")],
+    "reserve": [("param", "set", "SIM_BAT_MIN_PCT", "25")],
+}
+# The gate's reason each check-proving scenario must produce.
+EXPECTED_REASON = {
+    "stream": "Telemetry stream attitude_euler",
+    "disarm": "Still armed",
+    "reserve": "Battery fell to",
 }
 SQUARE_M = 20.0
 ALTITUDE_M = 10.0
@@ -176,6 +194,8 @@ async def run_scenario(name: str, spec, out_dir: Path, delay_s: float) -> dict:
         bool(injection["steps"]) and all(step["exit"] == 0 for step in injection["steps"])
     )
     clean = all(str(v) == "0" for v in leftovers.values())
+    expected = EXPECTED_REASON.get(name)
+    named = expected is None or any(expected in reason for reason in acceptance["reasons"])
     return {
         "scenario": name,
         "topology": spec.topology,
@@ -191,10 +211,21 @@ async def run_scenario(name: str, spec, out_dir: Path, delay_s: float) -> dict:
         "geofence_violation": result["geofence_violation"],
         "acceptance_passed": acceptance["passed"],
         "reasons": acceptance["reasons"],
+        "expected_reason": expected,
+        "min_battery_percent": min(
+            (p["battery_percent"] for p in points if "battery_percent" in p), default=None
+        ),
+        "last_armed": points[-1].get("armed") if points else None,
+        "stream_max_age_s": result.get("stream_max_age_s"),
         "leftovers": leftovers,
         "wall_time_s": round(time.monotonic() - started, 1),
-        # Correct outcome: injected, rejected with a stated reason, nothing left running.
-        "ok": injected and not acceptance["passed"] and bool(acceptance["reasons"]) and clean,
+        # Correct outcome: injected, rejected with a stated reason (the scenario's
+        # own, where it has one), nothing left running.
+        "ok": injected
+        and not acceptance["passed"]
+        and bool(acceptance["reasons"])
+        and named
+        and clean,
     }
 
 

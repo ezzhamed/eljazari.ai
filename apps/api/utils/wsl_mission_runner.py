@@ -40,6 +40,27 @@ _MISSION_SETTLE_S = 8.0
 _STALE_POSITION_S = 1.0
 # No position update for this long means the link is lost: the run ends.
 _LINK_LOST_S = 15.0
+# The oldest each stream may be when a sample is recorded: three intervals at the
+# rate PX4 actually delivers, and never under 1 s. In SITL on 2026-10-26 the 10 Hz
+# streams were at most 0.12 s old, battery and gps_info 0.5 s, and flight_mode,
+# armed, in_air and landed_state 1.0 s: PX4 sends the last two at 1 Hz although 4 Hz
+# is requested. A sample whose attitude, battery or mode is older than this repeats
+# a value the vehicle may no longer have, so the record names the stream and its
+# age and the acceptance gate rejects the run.
+_STREAM_LIMITS_S = {
+    "position": 1.0,
+    "position_velocity_ned": 1.0,
+    "altitude": 1.0,
+    "odometry": 1.0,
+    "velocity_ned": 1.0,
+    "attitude_euler": 1.0,
+    "battery": 1.5,
+    "gps_info": 1.5,
+    "in_air": 3.0,
+    "landed_state": 3.0,
+    "flight_mode": 3.0,
+    "armed": 3.0,
+}
 # PX4 caps tilt at MPC_TILTMAX_AIR (45 degrees by default; generated designs keep
 # the default, though PX4 accepts up to 89). An airborne vehicle past this has
 # lost control: in SITL a quadcopter with one motor stopped rolled past
@@ -375,6 +396,7 @@ async def _configure_telemetry_rates(system: Any) -> None:
         ("set_rate_battery", 2.0),
         ("set_rate_flight_mode", 4.0),
         ("set_rate_in_air", 4.0),
+        ("set_rate_landed_state", 4.0),
         ("set_rate_gps_info", 2.0),
     ]
     for method_name, rate_hz in rate_calls:
@@ -540,29 +562,13 @@ async def _collect_telemetry(
     home_lat: float | None = None
     home_lon: float | None = None
     home_alt_m: float | None = None
+    # Oldest each stream was at any recorded sample: how much margin the limits leave.
+    stream_max_age_s: dict[str, float] = {}
     stream_tasks = [
         asyncio.create_task(
-            _pump_stream(system.telemetry.position, latest, "position", warnings, received)
-        ),
-        asyncio.create_task(
-            _pump_stream(
-                system.telemetry.position_velocity_ned, latest, "position_velocity_ned", warnings
-            )
-        ),
-        asyncio.create_task(_pump_stream(system.telemetry.altitude, latest, "altitude", warnings)),
-        asyncio.create_task(_pump_stream(system.telemetry.odometry, latest, "odometry", warnings)),
-        asyncio.create_task(
-            _pump_stream(system.telemetry.velocity_ned, latest, "velocity_ned", warnings)
-        ),
-        asyncio.create_task(
-            _pump_stream(system.telemetry.attitude_euler, latest, "attitude_euler", warnings)
-        ),
-        asyncio.create_task(_pump_stream(system.telemetry.battery, latest, "battery", warnings)),
-        asyncio.create_task(_pump_stream(system.telemetry.gps_info, latest, "gps_info", warnings)),
-        asyncio.create_task(
-            _pump_stream(system.telemetry.flight_mode, latest, "flight_mode", warnings)
-        ),
-        asyncio.create_task(_pump_stream(system.telemetry.in_air, latest, "in_air", warnings)),
+            _pump_stream(getattr(system.telemetry, name), latest, name, warnings, received)
+        )
+        for name in _STREAM_LIMITS_S
     ]
 
     try:
@@ -578,11 +584,10 @@ async def _collect_telemetry(
             gps = latest.get("gps_info")
             mode = latest.get("flight_mode")
             in_air = latest.get("in_air")
+            armed = latest.get("armed")
+            landed_state = latest.get("landed_state")
 
-            if any(
-                item is None
-                for item in (pos, local, altitude, odometry, vel, att, bat, gps, mode, in_air)
-            ):
+            if any(latest.get(name) is None for name in _STREAM_LIMITS_S):
                 now = time.monotonic()
                 if output_path is not None and now >= next_snapshot_at:
                     _write_telemetry_snapshot(
@@ -639,6 +644,13 @@ async def _collect_telemetry(
             ):
                 north_m, east_m = _ned_from_gps(home_lat, home_lon, lat_deg, lon_deg)
             speed = math.sqrt(vel.north_m_s**2 + vel.east_m_s**2)
+            now = time.monotonic()
+            stale_streams: dict[str, float] = {}
+            for name, limit_s in _STREAM_LIMITS_S.items():
+                age_s = now - received.get(name, start)
+                stream_max_age_s[name] = max(stream_max_age_s.get(name, 0.0), age_s)
+                if age_s > limit_s:
+                    stale_streams[name] = round(age_s, 2)
             points.append(
                 {
                     "timestamp_s": round(timestamp_s, 2),
@@ -657,10 +669,13 @@ async def _collect_telemetry(
                     "battery_percent": _battery_percent(getattr(bat, "remaining_percent", 0.0)),
                     "battery_voltage": bat.voltage_v,
                     "flight_mode": str(mode),
-                    "armed": True,
+                    "armed": bool(armed),
+                    "landed_state": str(landed_state),
                     "gps_satellites": gps.num_satellites,
                 }
             )
+            if stale_streams:
+                points[-1]["stale_streams"] = stale_streams
             peak_alt_m = max(peak_alt_m, max(0.0, alt_m))
             _emit_live_point(points[-1])
             now = time.monotonic()
@@ -687,7 +702,10 @@ async def _collect_telemetry(
                 break
             if mission_done.is_set():
                 stop_deadline = stop_deadline or (time.monotonic() + _MISSION_SETTLE_S)
-                if peak_alt_m >= 0.5 and alt_m <= 0.5 and len(points) >= 6:
+                # The mission returns on touchdown; PX4 disarms COM_DISARM_LAND (2 s)
+                # later. Record until it does, so the gate can see it.
+                landed = peak_alt_m >= 0.5 and alt_m <= 0.5 and len(points) >= 6
+                if landed and not armed:
                     break
                 if stop_deadline is not None and time.monotonic() >= stop_deadline:
                     break
@@ -710,6 +728,9 @@ async def _collect_telemetry(
     )
     payload["telemetry_link_lost_after_s"] = link_lost_after_s
     payload["loss_of_control"] = loss_of_control
+    payload["stream_max_age_s"] = {
+        name: round(age_s, 2) for name, age_s in stream_max_age_s.items()
+    }
     if output_path is not None:
         _write_telemetry_snapshot(output_path, payload)
     return payload

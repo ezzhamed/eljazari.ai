@@ -272,6 +272,7 @@ class SimulationTestAgent:
             "artifacts": dict(getattr(sim.telemetry, "artifacts", {}) or {}),
             "model_attestation": sim.model_attestation,
             "mission_isolation": str(getattr(sim.telemetry, "mission_isolation", "unknown")),
+            "stream_max_age_s": dict(getattr(sim.telemetry, "stream_max_age_s", {}) or {}),
         }
 
     # ── Step 1c: Simplified evaluate for graph node ───────────────────────────

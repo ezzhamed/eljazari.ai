@@ -15,6 +15,8 @@ Hold           each waypoint with a loiter time held that long (1 s margin)
                within 1 m horizontally; altitude has its own check above
 Landing        last sample ≤ 0.5 m high and within 1 m of where the mission
                lands: home after return-to-launch, else the last waypoint
+Disarm         a landed vehicle's last sample is disarmed
+Battery        never below the 30% reserve the flight rules keep (RR001)
 Boundary       never farther from home than the code's geofence radius
 =============  ==============================================================
 
@@ -51,6 +53,10 @@ HOLD_RADIUS_M = 1.0
 HOLD_MARGIN_S = 1.0
 LANDED_MAX_ALT_M = 0.5
 MAX_LANDING_ERROR_M = 1.0
+# RR001 in data/safety-rules keeps a 30% battery margin. PX4's simulated battery
+# drains to SIM_BAT_MIN_PCT (50%) and stays there, whatever the aircraft weighs, so
+# in SITL this catches a failed or drained battery, not this design's energy use.
+MIN_BATTERY_PERCENT = 30.0
 
 LIMITS = {
     "max_median_interval_s": MAX_MEDIAN_INTERVAL_S,
@@ -63,6 +69,7 @@ LIMITS = {
     "hold_margin_s": HOLD_MARGIN_S,
     "landed_max_alt_m": LANDED_MAX_ALT_M,
     "max_landing_error_m": MAX_LANDING_ERROR_M,
+    "min_battery_percent": MIN_BATTERY_PERCENT,
 }
 
 
@@ -393,11 +400,41 @@ def assess_flight_conformance(
         result["retryable_with_code_change"] = (
             result["retryable_with_code_change"] or not mission.return_to_launch
         )
-    elif landing_error > MAX_LANDING_ERROR_M:
-        where = "home" if mission.return_to_launch else "the last waypoint"
-        reasons.append(
-            f"Landed {landing_error:.1f} m from {where}; the limit is {MAX_LANDING_ERROR_M:g} m"
-        )
+    else:
+        if landing_error > MAX_LANDING_ERROR_M:
+            where = "home" if mission.return_to_launch else "the last waypoint"
+            reasons.append(
+                f"Landed {landing_error:.1f} m from {where}; the limit is {MAX_LANDING_ERROR_M:g} m"
+            )
+        # PX4 disarms COM_DISARM_LAND (2 s) after it detects the landing, and the
+        # runner records until then. Runners before 2026-10-26 wrote armed=true on
+        # every sample, so their records cannot pass this check.
+        touchdown = len(points) - 1
+        while touchdown > 0 and points[touchdown - 1]["alt_m"] <= LANDED_MAX_ALT_M:
+            touchdown -= 1
+        on_ground_s = times[-1] - times[touchdown]
+        metrics["disarmed_after_landing"] = last.get("armed") is False
+        if "armed" not in last:
+            reasons.append("The record does not show whether the vehicle disarmed after landing")
+        elif last["armed"]:
+            reasons.append(
+                f"Still armed {on_ground_s:.1f} s after touchdown; PX4 disarms a landed "
+                "vehicle after 2 s"
+            )
+
+    batteries = [
+        (float(p["timestamp_s"]), float(p["battery_percent"]))
+        for p in points
+        if isinstance(p.get("battery_percent"), (int, float))
+    ]
+    if batteries:
+        low_at_s, low = min(batteries, key=lambda item: item[1])
+        metrics["min_battery_percent"] = round(low, 1)
+        if low < MIN_BATTERY_PERCENT:
+            reasons.append(
+                f"Battery fell to {low:.0f}% at {low_at_s:.1f} s; the flight rules keep a "
+                f"{MIN_BATTERY_PERCENT:g}% reserve"
+            )
 
     reach = max(math.hypot(p["north_m"], p["east_m"]) for p in points)
     metrics["max_distance_from_home_m"] = round(reach, 2)

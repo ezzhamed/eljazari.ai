@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The acceptance gate checks three things its documentation listed as not enforced:
+  - a landed vehicle must end disarmed. The mission runner recorded `armed=true` on every sample; it now records PX4's armed and landed state and keeps recording after touchdown until PX4 disarms;
+  - the battery must never fall below the 30% reserve of flight rule RR001. PX4's simulated battery drains to 50% and holds there, so in SITL this catches a failed or drained battery, not the design's energy use;
+  - every telemetry stream must be fresh when a sample is taken, not only position. The runner names any stream older than its limit (three delivery intervals, at least 1 s), and the gate rejects that record.
+- Fault scenarios `stream`, `disarm` and `reserve` in `scripts/check_sitl_faults.py`, each of which must be rejected for its own reason.
+- `sitl.yml` runs every fault scenario on the generated quadcopter and a motor failure on the hexacopter.
+
 ### Fixed
 
 - A clean manufacturer-data import now gives each motor its documented default curve. With no earlier declaration to keep, the importer fell back to the highest-voltage test by part number and declared the MN3508 KV380 with the 15*5 propeller instead of 13*4.4, so a fresh clone (and CI) failed `test_bundled_declaration_matches_only_its_own_test_condition`.

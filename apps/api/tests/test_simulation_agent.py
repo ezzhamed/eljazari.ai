@@ -1377,7 +1377,7 @@ HOVER_CODE = mission_code(altitude_m=10.0, hold_s=2.0)
 
 
 def _flown_points() -> list[TelemetryPoint]:
-    return [TelemetryPoint(**p, armed=True) for p in flown_mission(altitude_m=10.0, hold_s=2.0)]
+    return [TelemetryPoint(**p) for p in flown_mission(altitude_m=10.0, hold_s=2.0)]
 
 
 def _agent_with_mocks(
@@ -1861,6 +1861,8 @@ async def test_runner_records_only_live_samples_and_ends_on_a_lost_link(monkeypa
         gps_info=stream(SimpleNamespace(num_satellites=10)),
         flight_mode=stream("MISSION"),
         in_air=stream(True),
+        armed=stream(True),
+        landed_state=stream("IN_AIR"),
     )
     payload = await asyncio.wait_for(
         runner._collect_telemetry(SimpleNamespace(telemetry=telemetry), "s", 30.0, asyncio.Event()),
@@ -1871,6 +1873,130 @@ async def test_runner_records_only_live_samples_and_ends_on_a_lost_link(monkeypa
     assert any("Telemetry link lost" in w for w in payload["warnings"])
     # Nothing is recorded once the position stream has been silent past the limit.
     assert payload["points"][-1]["timestamp_s"] <= lost_after + 0.2 + 0.05
+
+
+def _live_telemetry(stream, *, attitude, armed):
+    """Fake MAVSDK telemetry: position live at 50 Hz, the rest from the arguments."""
+    position = SimpleNamespace(
+        latitude_deg=47.4, longitude_deg=8.5, relative_altitude_m=0.0, absolute_altitude_m=0.0
+    )
+    return SimpleNamespace(
+        position=stream(position, repeats=1000, every=0.02),
+        position_velocity_ned=stream(
+            SimpleNamespace(position=SimpleNamespace(north_m=0.0, east_m=0.0, down_m=0.0)),
+            repeats=1000,
+            every=0.02,
+        ),
+        altitude=stream(SimpleNamespace(), repeats=1000, every=0.02),
+        odometry=stream(
+            SimpleNamespace(position_body=SimpleNamespace(x_m=0.0, y_m=0.0, z_m=0.0)),
+            repeats=1000,
+            every=0.02,
+        ),
+        velocity_ned=stream(
+            SimpleNamespace(north_m_s=0.0, east_m_s=0.0, down_m_s=0.0), repeats=1000, every=0.02
+        ),
+        attitude_euler=attitude,
+        battery=stream(SimpleNamespace(remaining_percent=0.9, voltage_v=16.0), 1000, 0.02),
+        gps_info=stream(SimpleNamespace(num_satellites=10), repeats=1000, every=0.02),
+        flight_mode=stream("MISSION", repeats=1000, every=0.02),
+        in_air=stream(False, repeats=1000, every=0.02),
+        armed=armed,
+        landed_state=stream("ON_GROUND", repeats=1000, every=0.02),
+    )
+
+
+def _stream_factory():
+    import asyncio
+
+    def stream(value, repeats=1, every=0.0):
+        def factory():
+            async def gen():
+                for _ in range(repeats):
+                    yield value
+                    await asyncio.sleep(every)
+                await asyncio.sleep(3600)
+
+            return gen()
+
+        return factory
+
+    return stream
+
+
+@pytest.mark.asyncio
+async def test_runner_names_a_stream_that_stopped_updating(monkeypatch):
+    """A sample must not repeat an attitude the vehicle may no longer have."""
+    import asyncio
+
+    from utils import wsl_mission_runner as runner
+
+    monkeypatch.setattr(runner, "_TELEMETRY_INTERVAL", 0.02)
+    monkeypatch.setattr(
+        runner, "_STREAM_LIMITS_S", {**runner._STREAM_LIMITS_S, "attitude_euler": 0.2}
+    )
+    stream = _stream_factory()
+    attitude = SimpleNamespace(roll_deg=0.0, pitch_deg=0.0, yaw_deg=0.0)
+    telemetry = _live_telemetry(
+        stream, attitude=stream(attitude, repeats=5, every=0.02), armed=stream(True, 1000, 0.02)
+    )
+    payload = await asyncio.wait_for(
+        runner._collect_telemetry(SimpleNamespace(telemetry=telemetry), "s", 0.8, asyncio.Event()),
+        timeout=5,
+    )
+    stale = [p for p in payload["points"] if p.get("stale_streams")]
+    assert stale and set(stale[0]["stale_streams"]) == {"attitude_euler"}
+    assert stale[0]["stale_streams"]["attitude_euler"] >= 0.2
+    assert not payload["points"][0].get("stale_streams")
+    assert payload["stream_max_age_s"]["attitude_euler"] > 0.2
+    assert payload["stream_max_age_s"]["position"] < 0.2
+
+
+@pytest.mark.asyncio
+async def test_runner_records_until_px4_disarms_after_landing(monkeypatch):
+    """The mission returns on touchdown; the record must show the disarm that follows."""
+    import asyncio
+
+    from utils import wsl_mission_runner as runner
+
+    monkeypatch.setattr(runner, "_TELEMETRY_INTERVAL", 0.02)
+    stream = _stream_factory()
+
+    def armed_then_disarmed():
+        async def gen():
+            for _ in range(15):
+                yield True
+                await asyncio.sleep(0.02)
+            while True:
+                yield False
+                await asyncio.sleep(0.02)
+
+        return gen()
+
+    telemetry = _live_telemetry(
+        stream,
+        attitude=stream(SimpleNamespace(roll_deg=0.0, pitch_deg=0.0, yaw_deg=0.0), 1000, 0.02),
+        armed=armed_then_disarmed,
+    )
+    done = asyncio.Event()
+    done.set()
+    collect = runner._collect_telemetry(SimpleNamespace(telemetry=telemetry), "s", 5.0, done)
+    # A vehicle that flew: the landing condition needs a peak altitude.
+    monkeypatch.setattr(runner, "_resolve_altitude_m", _altitude_after_flight())
+    payload = await asyncio.wait_for(collect, timeout=5)
+    points = payload["points"]
+    assert points[-1]["armed"] is False and points[-1]["landed_state"] == "ON_GROUND"
+    assert all(p["armed"] for p in points[:-1])
+
+
+def _altitude_after_flight():
+    calls = {"n": 0}
+
+    def altitude(*_args, **_kwargs):
+        calls["n"] += 1
+        return 2.0 if calls["n"] <= 3 else 0.0
+
+    return altitude
 
 
 def test_runner_flags_a_tilt_beyond_control_once_airborne():

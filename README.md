@@ -43,10 +43,10 @@ eljazari.ai is an open-source workflow that turns a request such as *"a quadcopt
 | **Works** | Component selection that refuses infeasible sets (payload, endurance, voltage, fit) | [Propulsion](docs/PROPULSION_EVIDENCE.md) |
 | **Works** | A flight model of the generated flat X quad-, hexa- or octocopter, built from published motor tests; the simulator attests the aircraft it spawned | [Flight model](docs/FLIGHT_MODEL_SITL.md) |
 | **Works** | Mission code runs only if identical to the approved version, in a sandbox with no network, secrets or host files | [Sandbox](docs/MISSION_SANDBOX.md) |
-| **Works** | A deterministic gate accepts a flight only if it matched its mission: path within 1 m, altitude RMSE ≤ 0.5 m, hold time, landing point | [Acceptance](docs/SIMULATION_ACCEPTANCE.md) |
+| **Works** | A deterministic gate accepts a flight only if it matched its mission: path within 1 m, altitude RMSE ≤ 0.5 m, hold time, landing point, disarmed after landing, battery never below 30%, no stale telemetry stream | [Acceptance](docs/SIMULATION_ACCEPTANCE.md) |
 | **Works** | Durable checkpoints, one run per project across workers, one simulator per host | [Checkpoints](docs/DURABLE_CHECKPOINTS.md) · [Workers](docs/MULTIWORKER.md) |
+| **Works** | Ten injected faults (battery, GPS, geofence, link, PX4 killed, motor out on a quad and a hexa, stale attitude, no disarm, battery below reserve) all end in a rejection with the expected reason; `sitl.yml` runs them | [Faults](docs/SIMULATION_ACCEPTANCE.md#faults-injected-in-sitl) |
 | Experimental | Benchmark, 48 runs on real SITL (42 scored; 6 ambiguous prompts unscored): supported 20/21, impossible 15/15, unsupported 6/6; Arabic 20/21, English 21/21 | [Benchmark](docs/BENCHMARK.md) |
-| Experimental | Injected faults (battery, GPS, link, PX4 killed, motor out) always end in a rejection with a reason | [Faults](docs/SIMULATION_ACCEPTANCE.md#faults-injected-in-sitl) |
 | Experimental | Docker simulation runtime; calibration tools (no hardware result yet) | [Flight model](docs/FLIGHT_MODEL_SITL.md) · [Calibration](docs/CALIBRATION.md) |
 | Not yet | Independent bench data, calibrated dynamics, HIL, flight on real hardware | |
 

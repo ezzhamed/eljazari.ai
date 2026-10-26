@@ -21,9 +21,10 @@ concurrency:
 
 jobs:
   sitl:
-    name: Generated Quad-X in PX4 SITL
+    name: Generated aircraft and injected faults in PX4 SITL
     runs-on: [self-hosted, linux, px4-sitl]
-    timeout-minutes: 45
+    # Two flights plus ten fault scenarios, about two minutes each.
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: apps/api
@@ -70,6 +71,17 @@ jobs:
         run: >-
           "$PYTHON" scripts/check_generated_model_sitl.py
           --payload-g 125 --payload-g 400 --out "$REPORT_DIR"
+
+      # docs/SIMULATION_ACCEPTANCE.md#faults-injected-in-sitl: each run must be
+      # rejected (stream, disarm and reserve for their own reason) and leave no
+      # simulator process behind.
+      - name: Inject faults into the generated quadcopter
+        run: '"$PYTHON" scripts/check_sitl_faults.py --out "$REPORT_DIR/faults-quad"'
+
+      - name: Stop a motor on the generated hexacopter
+        run: >-
+          "$PYTHON" scripts/check_sitl_faults.py --scenario motor --topology hexacopter
+          --out "$REPORT_DIR/faults-hexa"
 
       - name: Upload reports
         if: always()

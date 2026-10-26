@@ -51,12 +51,13 @@ def flown_mission(
     altitude_m: float = 5.0,
     hold_s: float = 0.0,
 ) -> list[dict]:
-    """Samples at 10 Hz: ground, takeoff to 95%, mission, return, landing."""
+    """Samples at 10 Hz: ground, takeoff to 95%, mission, return, landing, and
+    PX4's disarm 2 s after touchdown, where the runner stops recording."""
     corners = corners or [(0.0, 0.0)]
     points: list[dict] = []
     state = {"t": 0.0, "n": 0.0, "e": 0.0, "alt": 0.0}
 
-    def sample(mode: str) -> None:
+    def sample(mode: str, armed: bool = True) -> None:
         points.append(
             {
                 "timestamp_s": round(state["t"], 2),
@@ -64,6 +65,7 @@ def flown_mission(
                 "east_m": state["e"],
                 "alt_m": state["alt"],
                 "flight_mode": mode,
+                "armed": armed,
             }
         )
         state["t"] += 1.0 / RATE_HZ
@@ -83,7 +85,7 @@ def flown_mission(
             sample(mode)
 
     for _ in range(int(RATE_HZ)):
-        sample("HOLD")
+        sample("HOLD", armed=False)
     move("TAKEOFF", 0.0, 0.0, 0.95 * altitude_m)
     for north, east in corners:
         move("MISSION", north, east, altitude_m)
@@ -91,6 +93,9 @@ def flown_mission(
             sample("MISSION")
     move("RETURN_TO_LAUNCH", 0.0, 0.0, altitude_m)
     move("RETURN_TO_LAUNCH", 0.0, 0.0, 0.0)
+    for _ in range(int(2 * RATE_HZ)):
+        sample("RETURN_TO_LAUNCH")
+    sample("RETURN_TO_LAUNCH", armed=False)
     return points
 
 

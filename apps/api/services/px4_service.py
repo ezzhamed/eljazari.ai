@@ -771,6 +771,7 @@ class PX4Service:
             telemetry_source=telemetry_source,
             mission_isolation=str(payload.get("mission_isolation") or "unknown"),
             mission_error=str(payload.get("mission_error") or ""),
+            stream_max_age_s=dict(payload.get("stream_max_age_s") or {}),
             warnings=warnings,
             artifacts=artifacts or {},
         )

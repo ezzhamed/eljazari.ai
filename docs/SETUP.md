@@ -319,7 +319,7 @@ CI runs ruff, MyPy on the safety-critical modules, both suites (including the mi
 cd apps/api
 python scripts/doctor.py                     # services, models, PX4, Gazebo, sandbox, disk
 python scripts/check_generated_model_sitl.py --topology quadcopter --payload-g 400
-python scripts/check_sitl_faults.py          # injected faults must end in a rejection
+python scripts/check_sitl_faults.py          # every injected fault must end in a rejection, ~15 min
 python scripts/check_multiworker.py          # inside Linux/WSL, with PostgreSQL and Redis
 python scripts/check_run_persistence.py <project-id>   # inside Linux/WSL: a pipeline worker can save its simulation record
 python scripts/run_benchmark.py --supervise --out ../../benchmarks/results/<run-id>   # the prompt suite

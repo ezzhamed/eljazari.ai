@@ -54,7 +54,11 @@ class TelemetryPoint(BaseModel):
     # Status
     flight_mode: str = "unknown"
     armed: bool = False
+    landed_state: str = "unknown"
     gps_satellites: int = 0
+
+    # Streams older than their limit when this sample was taken: name → age (s)
+    stale_streams: dict[str, float] = Field(default_factory=dict)
 
     # Motors (0.0–1.0 throttle per motor; may be empty if not reported)
     motors: list[float] = Field(default_factory=list)
@@ -84,6 +88,8 @@ class TelemetryData(BaseModel):
     # "linux_namespaces" when the mission ran in the sandbox; anything else means
     # generated code shared a process with (and could alter) this record.
     mission_isolation: str = "unknown"
+    # Oldest each telemetry stream was at any recorded sample (runner diagnostics)
+    stream_max_age_s: dict[str, float] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
     artifacts: dict[str, str] = Field(default_factory=dict)
 

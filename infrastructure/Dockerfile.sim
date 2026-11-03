@@ -96,7 +96,19 @@ WORKDIR ${PX4_SRC}
 # The fetch above excludes it; this guards against a future edit that does not.
 RUN test ! -e platforms/nuttx/NuttX/nuttx/.git
 
-RUN bash ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
+# PX4's Tools/setup/requirements.txt is unpinned, and pip cannot replace a Python
+# package apt installed: Debian ships no RECORD file for it, so the upgrade dies
+# with `uninstall-no-record-file`. Any new release of a PX4 dependency that raises
+# a floor above Noble's version therefore breaks this layer with no change here.
+# pandas 3.1.0 did exactly that (numpy>=2.0.2, python-dateutil>=2.9.0 against
+# apt's 1.26.4 and 2.8.2). Constraining every apt-owned distribution to its
+# installed version makes pip pick releases that fit the system instead
+# (pandas 3.0.6 today) rather than trying to remove apt's files.
+RUN python3 -m pip list --path /usr/lib/python3/dist-packages --format=freeze \
+        > /tmp/apt-python-constraints.txt \
+    && test -s /tmp/apt-python-constraints.txt \
+    && PIP_CONSTRAINT=/tmp/apt-python-constraints.txt \
+       bash ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
 
 RUN make px4_sitl_default -j"${BUILD_JOBS}"
 
